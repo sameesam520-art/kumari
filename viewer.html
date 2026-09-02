@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prabhu Bank - Live Screen Share Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #0a0f1d;
+      --bg-surface: #111827;
+      --bg-card: #1f2937;
+      --border: #374151;
+      --primary: #c41e48;
+      --primary-glow: rgba(196, 30, 72, 0.4);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation */
+    .viewer-navbar {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      height: 34px;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .brand-sub {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-left: 6px;
+      border-left: 1px solid var(--border);
+      padding-left: 10px;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .session-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .session-id-value {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* Main Container */
+    .viewer-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 20px;
+    }
+
+    /* Live Stream Video Card */
+    .video-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      flex: 1;
+      min-height: 520px;
+      position: relative;
+    }
+
+    .video-card-header {
+      background: rgba(31, 41, 55, 0.8);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-pill.connecting {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+
+    .status-pill.connected {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .status-pill.connected .status-dot {
+      animation: pulse-green 1.8s infinite;
+    }
+
+    @keyframes pulse-green {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    .status-pill.disconnected, .status-pill.ended {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    .status-detail-text {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    /* Video Frame Stage */
+    .video-viewport {
+      flex: 1;
+      background: #000;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-height: 480px;
+    }
+
+    #remoteScreenVideo {
+      width: 100%;
+      height: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+
+    /* State Overlay Message Card */
+    .state-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(10, 15, 29, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px;
+      text-align: center;
+      z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+
+    .state-overlay.hidden {
+      display: none;
+    }
+
+    .state-icon-box {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+    }
+
+    .state-icon-box svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .state-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .state-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 440px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .state-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px var(--primary-glow);
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    .state-btn:hover {
+      background: #a8153c;
+      transform: translateY(-1px);
+    }
+
+    /* Bottom Control Bar */
+    .viewer-controls-bar {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .controls-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .control-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .stat-val {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #f3f4f6;
+    }
+
+    .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-action {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: #4b5563;
+    }
+
+    .btn-action.btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .btn-action.btn-danger:hover {
+      background: rgba(239, 68, 68, 0.3);
+      color: #fff;
+    }
+
+    /* Fullscreen Mode Styling */
+    .video-viewport:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      max-height: 100vh;
+      background: #000;
+    }
+
+    .video-viewport:fullscreen #remoteScreenVideo {
+      max-height: 100vh;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .viewer-navbar {
+        padding: 12px 16px;
+      }
+      .viewer-main {
+        padding: 14px;
+      }
+      .brand-sub {
+        display: none;
+      }
+      .viewer-controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .controls-right {
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="viewer-navbar">
+    <div class="brand-wrap">
+      <img src="logo.png" alt="Prabhu Bank" class="brand-logo">
+      <span class="brand-title">Prabhu Bank</span>
+      <span class="brand-sub">Live Screen Share Viewer Console</span>
+    </div>
+
+    <div class="nav-actions">
+      <div class="session-badge">
+        <span>Session ID:</span>
+        <span class="session-id-value" id="navSessionIdDisplay">Loading...</span>
+      </div>
+      <a href="/responses.html" class="btn-action" style="text-decoration:none;">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        Admin Console
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Viewer Content -->
+  <main class="viewer-main">
+    
+    <!-- Screen View Card -->
+    <div class="video-card">
+      <div class="video-card-header">
+        <div class="header-left">
+          <div class="status-pill connecting" id="statusBadge">
+            <span class="status-dot"></span>
+            <span id="statusBadgeText">Connecting</span>
+          </div>
+          <span class="status-detail-text" id="statusDetailText">Connecting to device...</span>
+        </div>
+
+        <div class="header-right">
+          <span class="status-detail-text" id="transportText">WebRTC DTLS-SRTP</span>
+        </div>
+      </div>
+
+      <!-- Viewport Stage -->
+      <div class="video-viewport" id="videoContainer">
+        <!-- Live Video Element -->
+        <video id="remoteScreenVideo" autoplay playsinline></video>
+
+        <!-- Overlay for Waiting / Disconnected / Ended states -->
+        <div class="state-overlay" id="stateOverlay">
+          <div class="state-icon-box" id="stateIconBox">
+            <!-- Spinner Icon Default -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin-icon">
+              <line x1="12" y1="2" x2="12" y2="6"></line>
+              <line x1="12" y1="18" x2="12" y2="22"></line>
+              <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+              <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+              <line x1="2" y1="12" x2="6" y2="12"></line>
+              <line x1="18" y1="12" x2="22" y2="12"></line>
+              <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+              <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+            </svg>
+          </div>
+          <h2 class="state-title" id="stateTitle">Waiting for Screen Share</h2>
+          <p class="state-desc" id="stateDesc">Waiting for the user to start screen sharing through the portal or mobile app...</p>
+          <button class="state-btn" id="stateActionBtn" style="display:none;" onclick="reconnectViewer()">Reconnect</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Controls & Metadata Bar -->
+    <div class="viewer-controls-bar">
+      <div class="controls-left">
+        <div class="control-stat">
+          <span class="stat-label">Elapsed Time</span>
+          <span class="stat-val" id="sessionTimerDisplay">00:00</span>
+        </div>
+        <div class="control-stat">
+          <span class="stat-label">Resolution</span>
+          <span class="stat-val" id="resolutionDisplay">Auto</span>
+        </div>
+        <div class="control-stat">
+          <span class="stat-label">Transport</span>
+          <span class="stat-val" style="color:#10b981;">Direct P2P / STUN</span>
+        </div>
+      </div>
+
+      <div class="controls-right">
+        <button class="btn-action" id="fullscreenBtn" onclick="toggleFullscreen()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+          Fullscreen
+        </button>
+        <button class="btn-action btn-danger" id="stopSessionBtn" onclick="stopCurrentSession()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 6h12v12H6z"/></svg>
+          Stop Session
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="webrtc.js"></script>
+  <script>
+    let viewer = null;
+    let timerInterval = null;
+    let elapsedSeconds = 0;
+    let activeSessionId = null;
+
+    // Parse Session ID from URL query ?session=... or path /share/:id
+    function extractSessionId() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let sid = urlParams.get('session') || urlParams.get('sessionId');
+      if (!sid) {
+        const pathParts = window.location.pathname.split('/').filter(Boolean);
+        const shareIdx = pathParts.indexOf('share');
+        if (shareIdx !== -1 && pathParts[shareIdx + 1]) {
+          sid = pathParts[shareIdx + 1];
+        }
+      }
+      return sid;
+    }
+
+    function init() {
+      activeSessionId = extractSessionId();
+      const sessionDisplay = document.getElementById('navSessionIdDisplay');
+
+      if (!activeSessionId) {
+        sessionDisplay.textContent = 'None';
+        updateUIState('ended', 'No Session Specified', 'Please open this viewer with a valid session ID from the admin console or invite link.');
+        return;
+      }
+
+      sessionDisplay.textContent = activeSessionId.substring(0, 10) + '...';
+      startSessionTimer();
+      connectViewer(activeSessionId);
+    }
+
+    function connectViewer(sessionId) {
+      const videoEl = document.getElementById('remoteScreenVideo');
+
+      viewer = new PrabhuWebRTC.ScreenShareViewer({
+        sessionId: sessionId,
+        videoElement: videoEl,
+        onStateChange: (state, message) => {
+          handleViewerState(state, message);
+        },
+        onError: (err) => {
+          console.error('[Viewer Error]', err);
+          updateUIState('disconnected', 'Connection Error', err);
+        }
+      });
+
+      // Video metadata loaded to show stream resolution
+      videoEl.addEventListener('loadedmetadata', () => {
+        document.getElementById('resolutionDisplay').textContent = `${videoEl.videoWidth}x${videoEl.videoHeight}`;
+      });
+
+      viewer.join();
+    }
+
+    function handleViewerState(state, message) {
+      const badge = document.getElementById('statusBadge');
+      const badgeText = document.getElementById('statusBadgeText');
+      const detailText = document.getElementById('statusDetailText');
+
+      badge.className = 'status-pill ' + state;
+      detailText.textContent = message || state;
+
+      if (state === 'connecting') {
+        badgeText.textContent = 'Connecting';
+        updateUIState('connecting', 'Connecting to Device...', message);
+      } else if (state === 'waiting') {
+        badgeText.textContent = 'Waiting';
+        updateUIState('waiting', 'Waiting for User to Share Screen', message);
+      } else if (state === 'connected') {
+        badgeText.textContent = 'Connected';
+        // Hide overlay, video is live!
+        document.getElementById('stateOverlay').classList.add('hidden');
+      } else if (state === 'disconnected') {
+        badgeText.textContent = 'Disconnected';
+        updateUIState('disconnected', 'Screen Sharing Disconnected', message || 'The peer connection was interrupted.');
+      } else if (state === 'ended') {
+        badgeText.textContent = 'Session Ended';
+        stopSessionTimer();
+        updateUIState('ended', 'Session Ended', message || 'The user stopped screen sharing.');
+      }
+    }
+
+    function updateUIState(type, title, desc) {
+      const overlay = document.getElementById('stateOverlay');
+      const titleEl = document.getElementById('stateTitle');
+      const descEl = document.getElementById('stateDesc');
+      const actionBtn = document.getElementById('stateActionBtn');
+      const iconBox = document.getElementById('stateIconBox');
+
+      overlay.classList.remove('hidden');
+      titleEl.textContent = title;
+      descEl.textContent = desc;
+
+      if (type === 'disconnected') {
+        actionBtn.style.display = 'inline-flex';
+        actionBtn.textContent = 'Reconnect';
+        iconBox.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+      } else if (type === 'ended') {
+        actionBtn.style.display = 'none';
+        iconBox.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+      } else {
+        actionBtn.style.display = 'none';
+        iconBox.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" class="spin-icon"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
+      }
+    }
+
+    function reconnectViewer() {
+      if (activeSessionId) {
+        connectViewer(activeSessionId);
+      }
+    }
+
+    function stopCurrentSession() {
+      if (confirm('Are you sure you want to stop this live screen sharing session?')) {
+        if (viewer) {
+          viewer.stop('Stopped by viewer');
+        }
+      }
+    }
+
+    function toggleFullscreen() {
+      const container = document.getElementById('videoContainer');
+      if (!document.fullscreenElement) {
+        container.requestFullscreen().catch(err => {
+          alert(`Error entering fullscreen: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    function startSessionTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      elapsedSeconds = 0;
+      timerInterval = setInterval(() => {
+        elapsedSeconds++;
+        const mins = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+        const secs = String(elapsedSeconds % 60).padStart(2, '0');
+        document.getElementById('sessionTimerDisplay').textContent = `${mins}:${secs}`;
+      }, 1000);
+    }
+
+    function stopSessionTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+Options -Indexes
+RewriteEngine On
+
+# Route all /api/* requests to api.php (PHP backend)
+RewriteRule ^api/(.*)$ api.php [QSA,L]
+
+# Serve index.html as default
+DirectoryIndex index.html
+
+# Block direct access to sensitive files
+<FilesMatch "\.(ps1|bat|log|json|sh|env)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Block access to /data/ directory
+<IfModule mod_rewrite.c>
+    RewriteRule ^data/ - [F,L]
+</IfModule>

@@ -1,0 +1,12 @@
+{
+  "name": "prabhu-bank-kyc",
+  "version": "1.0.0",
+  "description": "Prabhu Bank KYC Re-Registration Portal Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
