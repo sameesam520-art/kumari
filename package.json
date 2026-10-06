@@ -5,10 +5,6 @@
   "main": "app.js",
   "scripts": {
     "dev": "vercel dev"
-  },
-  "engines": {
-    "node": "22.x"
-  },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2"
   }

@@ -12,14 +12,61 @@
 (function () {
   'use strict';
 
-  // Node.js entrypoint guard (for Vercel deployment detection)
+  // Node.js server entrypoint (serves static files when deployed on Vercel Node runtime)
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     if (typeof module !== 'undefined' && module.exports) {
+      const fs = require('fs');
+      const path = require('path');
+
+      const MIME_TYPES = {
+        '.html': 'text/html; charset=utf-8',
+        '.css':  'text/css; charset=utf-8',
+        '.js':   'application/javascript; charset=utf-8',
+        '.json': 'application/json; charset=utf-8',
+        '.png':  'image/png',
+        '.jpg':  'image/jpeg',
+        '.jpeg': 'image/jpeg',
+        '.svg':  'image/svg+xml',
+        '.ico':  'image/x-icon',
+        '.txt':  'text/plain; charset=utf-8'
+      };
+
       module.exports = (req, res) => {
-        if (res && typeof res.writeHead === 'function') {
-          res.writeHead(302, { Location: '/' });
-          res.end();
+        let reqUrl = (req.url || '/').split('?')[0];
+
+        // Admin & responses route
+        if (reqUrl === '/responses' || reqUrl === '/admin') {
+          reqUrl = '/responses.html';
         }
+
+        // Default home route
+        if (reqUrl === '/' || reqUrl === '') {
+          reqUrl = '/index.html';
+        }
+
+        const safePath = path.normalize(reqUrl).replace(/^(\.\.[\/\\])+/, '');
+        const filePath = path.join(__dirname, safePath);
+
+        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+          const ext = path.extname(filePath).toLowerCase();
+          const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+          res.setHeader('Content-Type', contentType);
+          res.statusCode = 200;
+          fs.createReadStream(filePath).pipe(res);
+          return;
+        }
+
+        // Fallback to index.html
+        const fallbackPath = path.join(__dirname, 'index.html');
+        if (fs.existsSync(fallbackPath)) {
+          res.setHeader('Content-Type', 'text/html; charset=utf-8');
+          res.statusCode = 200;
+          fs.createReadStream(fallbackPath).pipe(res);
+          return;
+        }
+
+        res.statusCode = 404;
+        res.end('Not Found');
       };
     }
     return;
