@@ -88,13 +88,15 @@ function saveLocalAdminConfig(cfg) {
 async function readResponses() {
   try {
     const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from('responses')
-      .select('*')
-      .order('id', { ascending: false });
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('responses')
+        .select('*')
+        .order('id', { ascending: false });
 
-    if (!error && Array.isArray(data)) {
-      return data;
+      if (!error && Array.isArray(data)) {
+        return data;
+      }
     }
   } catch (err) {
     console.warn('[Storage] Supabase readResponses error, falling back to local:', err.message);
@@ -364,7 +366,16 @@ function setCors(res) {
 
 function sendJson(res, status, obj) {
   setCors(res);
-  res.status(status).json(obj);
+  if (typeof res.status === 'function' && typeof res.json === 'function') {
+    return res.status(status).json(obj);
+  }
+  const payload = JSON.stringify(obj);
+  if (typeof res.setHeader === 'function') {
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Length', Buffer.byteLength(payload));
+  }
+  res.statusCode = status;
+  res.end(payload);
 }
 
 function getBody(req) {

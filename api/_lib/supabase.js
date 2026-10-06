@@ -13,12 +13,20 @@ let supabaseClient = null;
 
 function getSupabase() {
   if (!supabaseClient) {
-    supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false
-      }
-    });
+    if (!SUPABASE_URL || !SUPABASE_KEY) {
+      return null;
+    }
+    try {
+      supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY, {
+        auth: {
+          persistSession: false,
+          autoRefreshToken: false
+        }
+      });
+    } catch (e) {
+      console.warn('[Supabase Init Error]:', e.message);
+      return null;
+    }
   }
   return supabaseClient;
 }
