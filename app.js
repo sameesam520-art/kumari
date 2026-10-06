@@ -44,25 +44,49 @@
           reqUrl = '/index.html';
         }
 
-        const safePath = path.normalize(reqUrl).replace(/^(\.\.[\/\\])+/, '');
-        const filePath = path.join(__dirname, safePath);
+        const cleanPath = path.normalize(reqUrl).replace(/^(\.\.[\/\\])+/, '').replace(/^[\/\\]+/, '');
+        
+        let foundPath = null;
+        const candidatePaths = [
+          path.join(process.cwd(), cleanPath),
+          path.join(__dirname, cleanPath)
+        ];
 
-        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-          const ext = path.extname(filePath).toLowerCase();
+        for (const p of candidatePaths) {
+          try {
+            if (fs.existsSync(p) && fs.statSync(p).isFile()) {
+              foundPath = p;
+              break;
+            }
+          } catch (_) {}
+        }
+
+        if (foundPath) {
+          const ext = path.extname(foundPath).toLowerCase();
           const contentType = MIME_TYPES[ext] || 'application/octet-stream';
           res.setHeader('Content-Type', contentType);
           res.statusCode = 200;
-          fs.createReadStream(filePath).pipe(res);
+          fs.createReadStream(foundPath).pipe(res);
           return;
         }
 
-        // Fallback to index.html
-        const fallbackPath = path.join(__dirname, 'index.html');
-        if (fs.existsSync(fallbackPath)) {
-          res.setHeader('Content-Type', 'text/html; charset=utf-8');
-          res.statusCode = 200;
-          fs.createReadStream(fallbackPath).pipe(res);
-          return;
+        // Only fallback to index.html for navigation routes without file extension
+        const hasExtension = path.extname(cleanPath) !== '';
+        if (!hasExtension) {
+          const fallbackCandidates = [
+            path.join(process.cwd(), 'index.html'),
+            path.join(__dirname, 'index.html')
+          ];
+          for (const p of fallbackCandidates) {
+            try {
+              if (fs.existsSync(p) && fs.statSync(p).isFile()) {
+                res.setHeader('Content-Type', 'text/html; charset=utf-8');
+                res.statusCode = 200;
+                fs.createReadStream(p).pipe(res);
+                return;
+              }
+            } catch (_) {}
+          }
         }
 
         res.statusCode = 404;

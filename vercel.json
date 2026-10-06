@@ -1,7 +1,20 @@
 {
   "cleanUrls": true,
+  "functions": {
+    "app.js": {
+      "includeFiles": [
+        "*.html",
+        "*.css",
+        "*.png",
+        "*.jpg",
+        "*.jpeg",
+        "*.svg",
+        "js/**",
+        "data/**"
+      ]
+    }
+  },
   "rewrites": [
-    { "source": "/app.js",     "destination": "/js/app.js" },
     { "source": "/responses", "destination": "/responses.html" },
     { "source": "/admin",     "destination": "/responses.html" }
   ],
