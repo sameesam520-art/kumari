@@ -1,19 +1,38 @@
 Options -Indexes
-RewriteEngine On
-
-# Route all /api/* requests to api.php (PHP backend)
-RewriteRule ^api/(.*)$ api.php [QSA,L]
-
-# Serve index.html as default
 DirectoryIndex index.html
 
-# Block direct access to sensitive files
-<FilesMatch "\.(ps1|bat|log|json|sh|env)$">
-    Order Allow,Deny
-    Deny from all
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    CGIPassAuth On
+    SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+    # 1. Clean route for admin dashboard (/admin or /responses)
+    RewriteRule ^(admin|responses)/?$ responses.html [L,NC]
+
+    # 2. Route all /api/* calls directly to api.php (Prevents 301 redirect from dropping POST bodies)
+    RewriteRule ^api/?(.*)$ api.php?route=$1 [QSA,L]
+
+    # 3. HTTPS redirect — DISABLED until SSL certificate is configured on hosting
+    # To re-enable after setting up SSL/Let's Encrypt in cPanel, uncomment the lines below:
+    # RewriteCond %{HTTPS} !=on
+    # RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    # RewriteCond %{HTTP_HOST} !^localhost [NC]
+    # RewriteCond %{HTTP_HOST} !^[0-9]+(\.[0-9]+){3}
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Block direct browser access to backend scripts and logs
+<FilesMatch "\.(ps1|bat|log|sh|env|md)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order Allow,Deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
-# Block access to /data/ directory
+# Block direct browser access to /data/ directory
 <IfModule mod_rewrite.c>
-    RewriteRule ^data/ - [F,L]
+    RewriteRule ^data(/.*)?$ - [F,L]
 </IfModule>

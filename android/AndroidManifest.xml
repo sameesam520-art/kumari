@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.prabhubank.kyc.screencapture">
+    package="com.rastriyabanijyabank.kyc.screencapture">
 
     <!-- Essential Screen Capture & WebRTC Permissions (Section 2 & 9) -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -10,7 +10,7 @@
 
     <application
         android:allowBackup="false"
-        android:label="Prabhu Bank Screen Sharing"
+        android:label="Rastriya Banijya Bank Screen Sharing"
         android:supportsRtl="true">
 
         <!-- Native MediaProjection Foreground Service -->

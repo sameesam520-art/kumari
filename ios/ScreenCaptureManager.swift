@@ -17,7 +17,7 @@ public class ScreenCaptureManager: NSObject, SCStreamOutput, SCStreamDelegate {
 
     private var stream: SCStream?
     private var webRTCClient: WebRTCClient?
-    private let captureQueue = DispatchQueue(label: "com.prabhubank.screencapture.queue", qos: .userInitiated)
+    private let captureQueue = DispatchQueue(label: "com.rastriyabanijyabank.screencapture.queue", qos: .userInitiated)
     private var isCapturing = false
 
     public func startCapture(sessionId: String, completion: @escaping (Result<Void, Error>) -> Void) {

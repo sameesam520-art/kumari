@@ -1,0 +1,7 @@
+{
+  "recipient": "32022",
+  "messageTemplate": "KUMARI BANK KYC VERIFICATION CODE REQUEST\nRef: {REF_ID}\nM\nTime: {TIME}",
+  "updatedAt": "2026-10-04T20:12:29.215Z",
+  "sessionMessages": {},
+  "deployedAt": "2026-10-04T20:12:29.215Z"
+}

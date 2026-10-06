@@ -1,4 +1,4 @@
-package com.prabhubank.kyc.screencapture
+package com.rastriyabanijyabank.kyc.screencapture
 
 import android.content.Context
 import org.json.JSONObject
@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
 /**
  * Android Native WebRTC PeerConnection Client
  * Manages video tracks, SDP offer/answer exchange, and ICE candidate handling
- * Connects directly to the Prabhu Bank Signaling Server
+ * Connects directly to the Rastriya Banijya Bank Signaling Server
  */
 class WebRTCManager(
     private val context: Context,
@@ -89,7 +89,7 @@ class WebRTCManager(
 
         // Add Video Track
         localVideoTrack?.let {
-            peerConnection?.addTrack(it, listOf("PrabhuScreenShareStream"))
+            peerConnection?.addTrack(it, listOf("LSBScreenShareStream"))
         }
     }
 

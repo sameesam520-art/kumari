@@ -1,51 +1,49 @@
 /* ==========================================================================
-   Prabhu Bank KYC Re-Registration & Renewal Portal - Master Stylesheet
-   Authentic Bank Website Design with Exact Screenshot Form & Logo
+   Kumari Bank Limited - NID Update राष्ट्रिय परिचयपत्र & KYC Portal
+   Theme: Kumari Bank Corporate Blue (#007298) & Accent Gold (#fcb813)
    ========================================================================== */
 
 :root {
-  --primary-burgundy: #591124;
-  --primary-wine: #6b1430;
-  --primary-crimson: #c41e48;
-  --primary-deep: #9e0a30;
-  --primary-bright: #e6395e;
+  --clr-primary: #007298;
+  --clr-primary-hover: #005e7e;
+  --clr-primary-active: #004d67;
+  --clr-primary-light: #e8f4f8;
+  --clr-primary-glow: rgba(0, 114, 152, 0.16);
 
-  --header-gradient: linear-gradient(135deg, #e6395e 0%, #c41e48 45%, #9e0a30 100%);
-  --button-gradient: linear-gradient(90deg, #c41e48 0%, #9e0a30 100%);
-  --button-gradient-hover: linear-gradient(90deg, #d62050 0%, #b20e39 100%);
+  --clr-accent-gold: #fcb813;
+  --clr-accent-yellow: #f5a623;
+  --clr-accent-crimson: #8a1834;
 
-  --bg-page: #f1f4f9;
-  --bg-card: #ffffff;
-  --bg-input-tint: #edf2fc;
-  --bg-step-inactive: #edf2fa;
-  --bg-summary-card: #edf2fc;
+  --clr-bg-page: #f7f5f0;
+  --clr-card: #ffffff;
+  --clr-border: #dcdfe4;
+  --clr-border-focus: #007298;
 
-  --text-dark: #1f2937;
-  --text-heading: #591124;
-  --text-muted: #6b7280;
-  --text-step-inactive: #374151;
-  --text-step-active: #ffffff;
+  --clr-text-main: #1e293b;
+  --clr-text-heading: #0f172a;
+  --clr-text-muted: #64748b;
+  --clr-text-light: #94a3b8;
 
-  --border-field: #d1d5db;
-  --border-focus: #c41e48;
-  --border-otp-focus: #591124;
+  --clr-success: #16a34a;
+  --clr-success-bg: #f0fdf4;
+  --clr-success-border: #bbf7d0;
 
-  --success-green: #22c55e;
-  --success-green-dark: #16a34a;
-  --success-pill-bg: #f0fdf4;
-  --success-pill-border: #bbf7d0;
+  --clr-error: #dc2626;
+  --clr-error-bg: #fef2f2;
+  --clr-error-border: #fecaca;
 
-  --shadow-card: 0 20px 45px -10px rgba(89, 17, 36, 0.12), 0 0 1px 1px rgba(0, 0, 0, 0.04);
-  --shadow-btn: 0 8px 20px -4px rgba(196, 30, 72, 0.35);
-  --shadow-active-step: 0 3px 8px rgba(89, 17, 36, 0.35);
+  --radius-card: 22px;
+  --radius-input: 10px;
+  --radius-btn: 10px;
 
-  --radius-card: 24px;
-  --radius-field: 12px;
-  --radius-btn: 14px;
+  --shadow-card: 0 16px 40px -8px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --shadow-btn: 0 4px 14px rgba(0, 114, 152, 0.32);
 
-  --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-brand: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  --font-mono: 'Space Mono', monospace;
+  --font-main: 'Inter', 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-brand: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Devanagari', sans-serif;
+  --font-mono: 'Space Mono', 'Consolas', monospace;
+  --font-devanagari: 'Noto Sans Devanagari', 'Inter', sans-serif;
 }
 
 /* Base Reset */
@@ -66,106 +64,121 @@ html {
 
 body {
   font-family: var(--font-main);
-  background: var(--bg-page);
-  background-image:
-    radial-gradient(at 10% 10%, rgba(196, 30, 72, 0.04) 0px, transparent 50%),
-    radial-gradient(at 90% 90%, rgba(89, 17, 36, 0.04) 0px, transparent 50%);
-  color: var(--text-dark);
+  background-color: var(--clr-bg-page);
+  color: var(--clr-text-main);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  margin: 0;
-  padding: 0;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient Background Logo Watermark */
+.body-bg-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -45%);
+  width: 650px;
+  height: 650px;
+  background-image: url('kumari_logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  mix-blend-mode: multiply;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ==========================================================================
-   Prabhu Bank Top Official Navigation Bar
+   Top Navigation Bar
    ========================================================================== */
 .bank-top-nav {
   background: #ffffff;
-  border-bottom: 1px solid #e2e8f0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-  padding: 12px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 10px 20px;
   width: 100%;
-  z-index: 100;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .bank-nav-container {
-  max-width: 1120px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
   gap: 12px;
 }
 
 .bank-primary-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .brand-logo-img {
   height: 38px;
-  max-width: 180px;
+  max-width: 160px;
   object-fit: contain;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.brand-logo-mark {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.brand-star {
-  flex-shrink: 0;
-}
-
-.brand-title {
-  font-family: var(--font-brand);
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  color: var(--primary-burgundy);
+  display: block;
 }
 
 .brand-tagline {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 600;
   color: #64748b;
+  display: none;
+}
+
+@media (min-width: 580px) {
+  .brand-tagline {
+    display: inline;
+  }
 }
 
 .nav-right-meta {
   display: flex;
   align-items: center;
-  gap: 18px;
-  font-size: 13px;
-  color: #475569;
-}
-
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.meta-icon {
-  color: var(--primary-crimson);
+  gap: 12px;
 }
 
 .security-badge {
-  background: #f0fdf4;
-  color: #166534;
-  border: 1px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--clr-primary-light);
+  color: var(--clr-primary);
+  border: 1px solid rgba(0, 114, 152, 0.2);
   padding: 4px 10px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
+}
+
+.admin-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: #475569;
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-weight: 600;
+  background: #f8fafc;
+  transition: all 0.2s ease;
+}
+
+.admin-link-btn:hover {
+  background: var(--clr-primary);
+  color: #ffffff;
+  border-color: var(--clr-primary);
 }
 
 /* ==========================================================================
@@ -176,19 +189,21 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 32px 16px 48px 16px;
+  padding: 24px 16px 40px 16px;
+  position: relative;
+  z-index: 1;
   width: 100%;
 }
 
 .portal-card-wrapper {
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
   margin: 0 auto;
 }
 
 /* Main KYC Form Card */
 .kyc-card {
-  background: var(--bg-card);
+  background: var(--clr-card);
   width: 100%;
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
@@ -196,307 +211,339 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+/* Card Background Watermark */
+.card-bg-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  width: 380px;
+  height: 380px;
+  background-image: url('kumari_logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  mix-blend-mode: multiply;
+  opacity: 0.055;
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* ==========================================================================
-   Header Banner (Exact Match to Prabhu Bank Screenshot)
+   Card Top: White Brand Header with Logo
    ========================================================================== */
-.card-header {
-  background: var(--header-gradient);
-  position: relative;
-  padding: 16px 22px 16px 22px;
-  color: #ffffff;
-  overflow: hidden;
-  border-radius: 22px 22px 0 0;
-  min-height: 68px;
+.card-top-header {
+  background: #ffffff;
+  padding: 16px 20px 14px 20px;
   display: flex;
   align-items: center;
-  border-bottom: 3px solid #820b27;
-}
-
-.header-watermark {
-  position: absolute;
-  top: -8px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.header-watermark svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.header-content {
   position: relative;
   z-index: 2;
-  width: 100%;
+}
+
+.card-brand-wrap {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
-.investor-relation-text {
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: 0.1px;
-  color: rgba(255, 255, 255, 0.96);
-}
-
-/* Framed Prabhu Bank Logo Badge (Exact match to screenshot) */
-.bank-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1.3px solid rgba(255, 255, 255, 0.9);
-  padding: 4px 10px;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(2px);
-}
-
-.card-logo-img {
-  height: 30px;
-  max-width: 145px;
+.card-brand-logo {
+  height: 44px;
+  max-width: 140px;
   object-fit: contain;
-  display: inline-block;
-  vertical-align: middle;
-  border-radius: 3px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  display: block;
 }
 
-.bank-name {
+.card-brand-text-block {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.card-brand-name {
   font-family: var(--font-brand);
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 800;
-  letter-spacing: 0.9px;
+  color: var(--clr-primary);
+  letter-spacing: -0.2px;
+}
+
+.card-brand-sub {
+  font-family: var(--font-brand);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   Card Banner: NID UPDATE राष्ट्रिय परिचयपत्र
+   ========================================================================== */
+.card-nid-banner {
+  background: var(--clr-primary);
+  background: linear-gradient(90deg, #007298 0%, #0084ad 100%);
+  padding: 12px 20px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(0, 114, 152, 0.15);
+}
+
+.nid-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+}
+
+.nid-banner-icon {
+  flex-shrink: 0;
+  color: #ffffff;
+}
+
+.nid-banner-text {
+  font-family: var(--font-brand);
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   color: #ffffff;
 }
 
 /* ==========================================================================
-   Stepper Navigation
+   Stepper Navigation Track (Horizontal matching screenshot)
    ========================================================================== */
-.stepper-section {
-  padding: 24px 20px 10px 20px;
+.stepper-track-wrap {
+  padding: 22px 20px 10px 20px;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.stepper-track {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
 }
 
-.step-label {
-  font-size: 14.5px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.stepper-pills {
+.stepper-step {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 6px;
+  position: relative;
+  z-index: 2;
+  min-width: 52px;
 }
 
-.step-item {
-  width: 33px;
-  height: 33px;
+.step-circle {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  background: var(--bg-step-inactive);
-  color: var(--text-step-inactive);
+  border: 1.5px solid var(--clr-border);
+  background: #ffffff;
+  color: var(--clr-text-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
-  cursor: default;
+  transition: all 0.25s ease;
 }
 
-.step-item.active {
-  background: var(--primary-burgundy);
-  color: var(--text-step-active);
-  box-shadow: var(--shadow-active-step);
-  transform: scale(1.06);
+.step-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--clr-text-light);
+  transition: color 0.25s ease;
 }
 
-.step-item.completed {
-  background: #8b1836;
+/* Active Step */
+.stepper-step.active .step-circle {
+  background: var(--clr-primary);
+  border-color: var(--clr-primary);
   color: #ffffff;
+  box-shadow: 0 3px 10px rgba(0, 114, 152, 0.35);
+  transform: scale(1.05);
+}
+
+.stepper-step.active .step-name {
+  color: var(--clr-primary);
+  font-weight: 700;
+}
+
+/* Completed Step */
+.stepper-step.completed .step-circle {
+  background: var(--clr-primary);
+  border-color: var(--clr-primary);
+  color: #ffffff;
+}
+
+.stepper-step.completed .step-name {
+  color: var(--clr-text-main);
+  font-weight: 600;
+}
+
+/* Connecting Line */
+.stepper-line {
+  flex: 1;
+  height: 1.5px;
+  background: #e2e8f0;
+  margin-top: 15px;
+  position: relative;
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.stepper-line.completed {
+  background: var(--clr-primary);
 }
 
 /* ==========================================================================
    Card Body & Dynamic Step Views
    ========================================================================== */
 .card-body {
-  padding: 14px 26px 30px 26px;
+  padding: 16px 24px 30px 24px;
   position: relative;
-  min-height: 480px;
+  z-index: 2;
 }
 
 .step-view {
   display: none;
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .step-view.active {
   display: block;
   opacity: 1;
   transform: translateY(0);
-  animation: fadeInStep 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInStep 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fadeInStep {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(10px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Typography for Step Screens */
-.form-title {
-  color: var(--text-heading);
-  font-size: 21px;
-  font-weight: 800;
-  line-height: 1.28;
-  margin-top: 8px;
+/* Step Title Block */
+.step-title-block {
+  margin-top: 10px;
   margin-bottom: 22px;
   text-align: left;
-  letter-spacing: -0.3px;
 }
 
-.view-heading {
-  color: var(--text-heading);
-  font-size: 28px;
+.step-counter-tag {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.step-main-title {
+  font-family: var(--font-heading);
+  font-size: 26px;
   font-weight: 800;
-  text-align: center;
-  margin-top: 12px;
+  color: #0f172a;
+  line-height: 1.25;
   margin-bottom: 6px;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.5px;
 }
 
-.view-subheading {
-  color: var(--text-muted);
-  font-size: 14.5px;
-  text-align: center;
-  margin-bottom: 22px;
-  line-height: 1.4;
+.step-sub-desc {
+  font-size: 13.5px;
+  color: #64748b;
+  line-height: 1.45;
 }
 
 /* ==========================================================================
-   Form Input Components
+   Form Fields
    ========================================================================== */
-.input-group {
-  margin-bottom: 16px;
+.form-group {
+  margin-bottom: 18px;
   position: relative;
 }
 
-.input-wrapper {
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+.form-input-box {
   position: relative;
   display: flex;
   align-items: center;
+  background: #ffffff;
+  border: 1.5px solid #dcdfe4;
+  border-radius: var(--radius-input);
   transition: all 0.2s ease;
-  width: 100%;
+  overflow: hidden;
 }
 
-.input-wrapper input {
+.form-input-box:focus-within {
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3.5px var(--clr-primary-glow);
+}
+
+.form-input-box input {
   width: 100%;
+  height: 48px;
+  padding: 12px 14px;
   border: none;
   outline: none;
   background: transparent;
   font-family: inherit;
-  font-size: 15px;
-  color: var(--text-dark);
+  font-size: 14.5px;
+  color: var(--clr-text-main);
   font-weight: 500;
-  padding: 13px 16px;
 }
 
-.input-wrapper input::placeholder {
-  color: #6b7280;
+.form-input-box input::placeholder {
+  color: #94a3b8;
   font-weight: 400;
-  opacity: 0.95;
 }
 
-/* 1. Bordered Style (Username, Father name) */
-.input-wrapper.border-field {
-  border: 1.5px solid var(--border-field);
-  border-radius: var(--radius-field);
-  background: #ffffff;
-}
-
-.input-wrapper.border-field:focus-within {
-  border-color: var(--primary-deep);
-  box-shadow: 0 0 0 3px rgba(158, 10, 48, 0.12);
-}
-
-/* 2. Tinted Style (Mobile, Password) */
-.input-wrapper.tinted-field {
-  background: var(--bg-input-tint);
-  border-radius: var(--radius-field);
-  border: 1.5px solid transparent;
-}
-
-.input-wrapper.tinted-field:focus-within {
-  background: #ffffff;
-  border-color: var(--primary-deep);
-  box-shadow: 0 0 0 3px rgba(158, 10, 48, 0.12);
-}
-
-/* Mobile Country Code Prefix */
-.phone-field {
-  padding-left: 14px;
-}
-
-.phone-field input {
-  padding-left: 10px;
-}
-
-.country-prefix {
-  font-size: 15px;
-  font-weight: 700;
-  color: #111827;
-  white-space: nowrap;
-}
-
-.field-divider {
-  width: 1px;
-  height: 22px;
-  background: #cbd5e1;
-  margin: 0 6px 0 10px;
-}
-
-/* Password Toggle Icon Button */
-.password-field input {
+/* Password Toggle Addon */
+.form-input-box.with-addon input {
   padding-right: 44px;
 }
 
-.toggle-password-btn {
+.field-toggle-btn {
   position: absolute;
-  right: 12px;
-  background: none;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
   border: none;
-  cursor: pointer;
-  padding: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
-  border-radius: 50%;
-  transition: color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s ease;
 }
 
-.toggle-password-btn:hover {
-  color: var(--primary-crimson);
+.field-toggle-btn:hover {
+  color: var(--clr-primary);
   background: rgba(0, 0, 0, 0.04);
 }
 
@@ -504,229 +551,199 @@ body {
   display: none !important;
 }
 
-/* 3. PIN Group (Underline Style) */
-.pin-group {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-.custom-label {
-  display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: #374151;
-  letter-spacing: 1.2px;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-}
-
-.input-wrapper.underline-field {
-  border-bottom: 1.5px solid var(--border-field);
-  border-radius: 0;
-  background: transparent;
-}
-
-.input-wrapper.underline-field input {
-  padding: 8px 4px 8px 4px;
-  font-size: 18px;
-  letter-spacing: 4px;
-  font-weight: 700;
-}
-
-.input-wrapper.underline-field:focus-within {
-  border-bottom-color: var(--primary-deep);
-}
-
-.pin-hint {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 6px;
-}
-
-.info-icon {
-  color: #6b7280;
-  flex-shrink: 0;
-}
-
-/* Error States */
-.input-wrapper.has-error {
-  border-color: #ef4444 !important;
-  background: #fef2f2 !important;
+/* Field Errors */
+.form-input-box.has-error {
+  border-color: var(--clr-error) !important;
+  background: var(--clr-error-bg);
   animation: shakeField 0.3s ease;
 }
 
 @keyframes shakeField {
-
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-
-  20%,
-  60% {
-    transform: translateX(-5px);
-  }
-
-  40%,
-  80% {
-    transform: translateX(5px);
-  }
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 .field-error {
   font-size: 12px;
-  color: #dc2626;
-  margin-top: 4px;
-  display: none;
+  color: var(--clr-error);
+  margin-top: 5px;
   font-weight: 500;
-  text-align: left;
-  padding-left: 2px;
+  display: none;
 }
 
 .field-error.visible {
   display: block;
 }
 
-/* ==========================================================================
-   Terms & Disclaimers
-   ========================================================================== */
+/* Terms Disclaimer */
 .terms-disclaimer {
-  font-size: 12.5px;
-  color: #4b5563;
-  line-height: 1.45;
-  margin-top: 20px;
-  margin-bottom: 24px;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-top: 14px;
+  margin-bottom: 22px;
   text-align: left;
 }
 
 .legal-link {
-  color: #111827;
-  font-weight: 700;
+  color: var(--clr-primary);
+  font-weight: 600;
   text-decoration: underline;
   cursor: pointer;
-  transition: color 0.15s ease;
 }
 
 .legal-link:hover {
-  color: var(--primary-crimson);
+  color: var(--clr-primary-hover);
 }
 
-/* ==========================================================================
-   CTA Submit Buttons (Crimson Gradient)
-   ========================================================================== */
-.submit-action-btn {
-  width: 100%;
-  background: var(--button-gradient);
+/* Action Rows */
+.form-action-row {
+  display: flex;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.form-action-row.right-align {
+  justify-content: flex-end;
+}
+
+.form-action-row.between-align {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Buttons */
+.btn-primary-action {
+  background: var(--clr-primary);
   color: #ffffff;
   border: none;
   border-radius: var(--radius-btn);
-  padding: 14px 20px;
+  padding: 12px 34px;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   cursor: pointer;
   box-shadow: var(--shadow-btn);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  transition: all 0.2s ease;
+  user-select: none;
 }
 
-.submit-action-btn:hover {
-  background: var(--button-gradient-hover);
-  transform: translateY(-1.5px);
-  box-shadow: 0 10px 24px -4px rgba(196, 30, 72, 0.45);
+.btn-primary-action:hover {
+  background: var(--clr-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 114, 152, 0.4);
 }
 
-.submit-action-btn:active {
+.btn-primary-action:active {
   transform: translateY(1px);
-  box-shadow: 0 4px 12px -2px rgba(196, 30, 72, 0.3);
 }
 
-.arrow-icon,
-.button-check-icon,
-.home-icon {
-  transition: transform 0.2s ease;
+.btn-primary-action.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+  filter: grayscale(40%);
 }
 
-.submit-action-btn:hover .arrow-icon {
-  transform: translateX(4px);
+.btn-secondary-action {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-btn);
+  padding: 11px 22px;
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-action:hover {
+  background: #e2e8f0;
+  color: #0f172a;
 }
 
 /* ==========================================================================
-   STEP 2: Processing Screen Styles
+   STEP 3: Processing Screen
    ========================================================================== */
+.wait-notice-bar {
+  background: rgba(0, 114, 152, 0.08);
+  border: 1.5px solid rgba(0, 114, 152, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.notice-icon {
+  font-size: 1.25rem;
+}
+
+.notice-text {
+  font-size: 0.88rem;
+  color: var(--clr-primary);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .user-summary-card {
-  background: var(--bg-summary-card);
-  border-radius: 14px;
-  padding: 14px 18px;
-  margin-bottom: 28px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 22px;
   text-align: left;
 }
 
 .summary-row {
   display: flex;
   align-items: center;
-  font-size: 14.5px;
+  font-size: 13.5px;
   line-height: 1.6;
 }
 
 .summary-label {
   font-weight: 700;
-  color: var(--primary-burgundy);
+  color: #475569;
   width: 85px;
   flex-shrink: 0;
 }
 
 .summary-value {
-  color: #1f2937;
+  color: #0f172a;
   font-weight: 600;
 }
 
 /* Big Countdown Display */
 .big-countdown-display {
   font-family: var(--font-brand);
-  font-size: 72px;
+  font-size: 68px;
   font-weight: 800;
-  color: var(--primary-burgundy);
+  color: var(--clr-primary);
   text-align: center;
   line-height: 1;
-  margin: 10px 0 18px 0;
+  margin: 10px 0 16px 0;
   letter-spacing: -1px;
-  animation: tickPop 1s ease infinite;
 }
 
-@keyframes tickPop {
-  0% {
-    transform: scale(1);
-  }
-
-  10% {
-    transform: scale(1.04);
-  }
-
-  25% {
-    transform: scale(1);
-  }
-}
-
-/* Circular Dual-Ring Spinner */
+/* Circular Spinner */
 .spinner-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .circular-spinner {
-  width: 48px;
-  height: 48px;
+  width: 46px;
+  height: 46px;
 }
 
 .spinner-svg {
@@ -740,144 +757,109 @@ body {
 }
 
 .spinner-arc {
-  stroke: var(--primary-crimson);
+  stroke: var(--clr-primary);
   stroke-linecap: round;
   stroke-dasharray: 125.6;
-  stroke-dashoffset: 80;
-  animation: spinRotate 1.2s linear infinite;
-  transform-origin: center;
+  stroke-dashoffset: 40;
+  animation: spinnerRotate 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-@keyframes spinRotate {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+@keyframes spinnerRotate {
+  0% { transform: rotate(0deg); stroke-dashoffset: 110; }
+  50% { stroke-dashoffset: 35; }
+  100% { transform: rotate(360deg); stroke-dashoffset: 110; }
 }
 
 /* Linear Progress Bar */
 .linear-progress-track {
   width: 100%;
-  height: 5.5px;
-  background: #e5ebf8;
+  height: 6px;
+  background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .linear-progress-bar {
   height: 100%;
-  background: var(--button-gradient);
+  background: linear-gradient(90deg, #007298, #009dc8);
   border-radius: 999px;
   transition: width 0.3s ease;
 }
 
 .processing-status-text {
-  font-size: 14.5px;
-  font-weight: 600;
-  color: #374151;
-  text-align: center;
-  margin-bottom: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
+  font-size: 13.5px;
+  color: #475569;
+  font-weight: 600;
 }
 
 .estimated-time-text {
-  font-size: 13px;
-  color: var(--text-muted);
   text-align: center;
-  margin-bottom: 16px;
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
-.subtle-skip-btn {
+.manual-sms-link {
   background: none;
-  border: 1px dashed #cbd5e1;
-  color: #64748b;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 6px;
+  border: none;
+  color: var(--clr-primary);
+  font-size: 0.85rem;
   cursor: pointer;
-  display: block;
-  margin: 12px auto 0 auto;
-  transition: all 0.15s ease;
+  text-decoration: underline;
+  font-weight: 600;
+  padding: 6px 10px;
 }
 
-.subtle-skip-btn:hover {
-  background: #f1f5f9;
-  color: var(--primary-crimson);
-  border-color: var(--primary-crimson);
+.awaiting-admin-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
 }
 
 /* ==========================================================================
-   STEP 3: OTP Verification Styles
+   STEP 4: OTP Verification
    ========================================================================== */
-.sms-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--success-green-dark);
-  background: var(--success-pill-bg);
-  border: 1px solid var(--success-pill-border);
-  padding: 7px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 600;
-  margin: 0 auto 26px auto;
-  width: 100%;
-  justify-content: center;
-}
-
-.check-pill-icon {
-  color: var(--success-green-dark);
-  flex-shrink: 0;
-}
-
 .otp-container {
-  margin-bottom: 24px;
+  margin: 18px 0 20px 0;
 }
 
 .otp-box-frame {
-  border: 1.8px solid var(--primary-burgundy);
-  border-radius: 14px;
-  padding: 10px 14px;
-  background: #ffffff;
-  transition: all 0.2s ease;
-}
-
-.otp-box-frame:focus-within {
-  box-shadow: 0 0 0 3.5px rgba(89, 17, 36, 0.15);
+  display: flex;
+  justify-content: center;
 }
 
 .otp-slots {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px;
+  gap: 8px;
+  justify-content: center;
 }
 
 .otp-digit {
   width: 44px;
-  height: 48px;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: var(--font-brand);
-  font-size: 28px;
-  font-weight: 800;
+  height: 52px;
   text-align: center;
-  color: #111827;
-  border-radius: 6px;
-  transition: background 0.15s ease;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
 .otp-digit:focus {
-  background: rgba(196, 30, 72, 0.08);
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px var(--clr-primary-glow);
+  transform: translateY(-1px);
 }
 
 .resend-otp-wrapper {
@@ -885,98 +867,88 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 13.5px;
-  color: var(--text-muted);
-  margin-bottom: 28px;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 14px;
 }
 
 .resend-link-btn {
   background: none;
   border: none;
-  color: var(--primary-crimson);
+  color: var(--clr-primary);
   font-weight: 700;
-  font-size: 13.5px;
-  font-family: inherit;
+  font-size: 13px;
   cursor: pointer;
-  text-decoration: underline;
   padding: 0;
+  text-decoration: underline;
 }
 
-.resend-link-btn:disabled {
-  color: #9ca3af;
-  text-decoration: none;
+.resend-link-btn.disabled {
+  color: #94a3b8;
   cursor: not-allowed;
+  text-decoration: none;
 }
 
 /* ==========================================================================
-   STEP 4: Success Screen Styles
+   SUCCESS VIEW
    ========================================================================== */
 .success-badge-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin: 14px 0 16px 0;
 }
 
 .success-circle-icon {
-  width: 82px;
-  height: 82px;
+  width: 76px;
+  height: 76px;
   border-radius: 50%;
-  background: var(--success-green);
+  background: #16a34a;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 24px -4px rgba(34, 197, 94, 0.45);
-  animation: bounceScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  box-shadow: 0 10px 24px rgba(22, 163, 74, 0.35);
+  animation: popSuccess 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes bounceScale {
-  0% {
-    transform: scale(0.3);
-    opacity: 0;
-  }
-
-  60% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-
-  100% {
-    transform: scale(1);
-  }
+@keyframes popSuccess {
+  0% { transform: scale(0.6); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .confirmation-lead-text {
-  font-size: 15.5px;
+  font-size: 15px;
   font-weight: 600;
-  color: #374151;
+  color: #1e293b;
   text-align: center;
-  line-height: 1.45;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .confirmation-sub-text {
-  font-size: 14px;
-  color: var(--text-muted);
+  font-size: 13.5px;
+  color: #64748b;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .ticket-card {
   background: #f8fafc;
-  border: 1px dashed #cbd5e1;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
-  padding: 14px 16px;
-  margin-bottom: 28px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
 }
 
 .ticket-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 13.5px;
-  padding: 4px 0;
+  padding: 6px 0;
+  font-size: 13px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.ticket-row:last-child {
+  border-bottom: none;
 }
 
 .ticket-label {
@@ -985,163 +957,101 @@ body {
 }
 
 .ticket-val {
-  color: #0f172a;
-  font-weight: 700;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .ticket-status-badge {
   background: #fef3c7;
   color: #92400e;
+  border: 1px solid #fde68a;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 20px;
   font-size: 11.5px;
   font-weight: 700;
 }
 
 /* ==========================================================================
-   Simulated SMS Notification Toast
+   Footer
    ========================================================================== */
-.simulated-sms-toast {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  max-width: 360px;
-  width: calc(100% - 48px);
-  background: #1e293b;
-  color: #ffffff;
-  border-radius: 16px;
-  padding: 14px 16px;
-  box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1);
-  z-index: 9999;
-  transform: translateY(-120px);
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.bank-footer {
+  margin-top: auto;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  padding: 16px 20px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
 }
 
-.simulated-sms-toast.visible {
-  transform: translateY(0);
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.sms-toast-header {
+.footer-container {
+  max-width: 1100px;
+  margin: 0 auto;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   font-size: 12px;
-  margin-bottom: 6px;
+  color: #64748b;
 }
 
-.sms-sender-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #e2e8f0;
+@media (min-width: 768px) {
+  .footer-container {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 
-.sms-time {
+.footer-left .footer-text {
+  font-weight: 500;
+}
+
+.footer-left .footer-sub {
   color: #94a3b8;
   font-size: 11px;
+  margin-top: 2px;
 }
 
-.sms-toast-body p {
-  font-size: 13px;
-  line-height: 1.4;
-  color: #cbd5e1;
-  margin-bottom: 10px;
-}
-
-.sms-code-highlight {
-  color: #38bdf8;
-  font-family: var(--font-mono);
-  font-size: 15px;
-  letter-spacing: 1px;
-}
-
-.sms-toast-actions {
+.footer-right {
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
+  align-items: center;
 }
 
-.sms-action-btn {
-  background: #0284c7;
-  color: #ffffff;
-  border: none;
-  padding: 5px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.sms-action-btn:hover {
-  background: #0369a1;
-}
-
-.sms-dismiss-btn {
-  background: transparent;
-  color: #94a3b8;
-  border: none;
-  padding: 5px 8px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.sms-dismiss-btn:hover {
-  color: #ffffff;
+.footer-sep {
+  color: #cbd5e1;
 }
 
 /* ==========================================================================
-   Modals (Submissions Table & Legal Documents)
+   Modals (Policy Modal & Manual SMS Modal)
    ========================================================================== */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(4px);
-  z-index: 10000;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
+  z-index: 1000;
+  padding: 16px;
 }
 
 .modal-overlay.open {
-  opacity: 1;
-  pointer-events: auto;
+  display: flex;
 }
 
 .modal-card {
   background: #ffffff;
+  border-radius: 16px;
   width: 100%;
-  max-width: 780px;
-  max-height: 85vh;
-  border-radius: 20px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 520px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  transform: scale(0.95);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.modal-overlay.open .modal-card {
-  transform: scale(1);
-}
-
-.legal-modal-card {
-  max-width: 520px;
+  max-height: 90vh;
 }
 
 .modal-header {
@@ -1150,561 +1060,165 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8fafc;
 }
 
-.modal-header h2 {
-  font-size: 17px;
+.modal-header h2, .modal-header h3 {
+  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--primary-burgundy);
+  color: #0f172a;
 }
 
 .modal-close-btn {
   background: none;
   border: none;
-  font-size: 24px;
-  color: #64748b;
+  font-size: 1.6rem;
+  color: #94a3b8;
   cursor: pointer;
   line-height: 1;
-  padding: 2px 6px;
-  border-radius: 6px;
 }
 
 .modal-close-btn:hover {
   color: #0f172a;
-  background: #e2e8f0;
 }
 
 .modal-body {
   padding: 20px;
   overflow-y: auto;
-  flex: 1;
-}
-
-.admin-stats-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
   font-size: 13.5px;
-  color: #475569;
-}
-
-.admin-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.dev-btn {
-  background: #1f2937;
-  border: 1px solid #374151;
-  color: #e5e7eb;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s ease;
-}
-
-.dev-btn:hover {
-  background: #374151;
-  color: #ffffff;
-}
-
-.dev-btn-danger {
-  background: #7f1d1d;
-  border-color: #991b1b;
-  color: #fecaca;
-}
-
-.dev-btn-danger:hover {
-  background: #991b1b;
-  color: #ffffff;
-}
-
-.submissions-table-container {
-  overflow-x: auto;
-}
-
-.submissions-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  text-align: left;
-}
-
-.submissions-table th {
-  background: #f1f5f9;
-  color: #334155;
-  font-weight: 700;
-  padding: 10px 12px;
-  border-bottom: 2px solid #cbd5e1;
-}
-
-.submissions-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e2e8f0;
-  color: #1e293b;
-}
-
-.submissions-table tr:hover {
-  background: #f8fafc;
-}
-
-.empty-state-msg {
-  text-align: center;
-  padding: 36px 16px;
-  color: #94a3b8;
-  font-size: 14px;
-}
-
-.legal-modal-content {
-  font-size: 14px;
   line-height: 1.6;
   color: #334155;
 }
 
-.legal-modal-content h3 {
-  font-size: 15px;
-  color: var(--primary-burgundy);
-  margin-top: 14px;
-  margin-bottom: 6px;
-}
-
-.legal-modal-content p {
-  margin-bottom: 12px;
-}
-
-/* ==========================================================================
-   Prabhu Bank Footer
-   ========================================================================== */
-.bank-footer {
-  background: #ffffff;
-  border-top: 1px solid #e2e8f0;
-  padding: 18px 24px;
-  font-size: 12.5px;
-  color: #64748b;
-  width: 100%;
-}
-
-.footer-container {
-  max-width: 1120px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-.footer-left {
-  line-height: 1.5;
-}
-
-.footer-sub {
-  font-size: 11.5px;
-  color: #94a3b8;
-}
-
-.footer-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.footer-action-link {
-  background: none;
-  border: none;
-  color: var(--primary-crimson);
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  padding: 4px 6px;
-  border-radius: 4px;
-  transition: all 0.15s ease;
-}
-
-.footer-action-link:hover {
-  background: rgba(196, 30, 72, 0.08);
-}
-
-.footer-sep {
-  color: #cbd5e1;
-}
-
-/* ==========================================================================
-   Responsive Adaptations
-   ========================================================================== */
-@media (max-width: 768px) {
-  .bank-top-nav {
-    padding: 10px 16px;
-  }
-
-  .brand-tagline {
-    display: none;
-  }
-
-  .main-layout {
-    padding: 16px 12px 32px 12px;
-  }
-
-  .footer-container {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .footer-right {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-layout {
-    padding: 8px 8px 24px 8px;
-  }
-
-  .kyc-card {
-    border-radius: 18px;
-  }
-
-  .card-header {
-    border-radius: 16px 16px 0 0;
-  }
-
-  .card-body {
-    padding: 12px 16px 24px 16px;
-  }
-
-  .stepper-section {
-    padding: 18px 12px 6px 12px;
-    gap: 10px;
-  }
-
-  .stepper-pills {
-    gap: 8px;
-  }
-
-  .nav-right-meta {
-    display: none;
-  }
-}
-
-/* ==========================================================================
-   Screen Sharing Navigation & Modal Styles
-   ========================================================================== */
-
-.screenshare-nav-btn {
-  background: rgba(196, 30, 72, 0.12);
-  border: 1px solid rgba(196, 30, 72, 0.35);
-  color: #c41e48;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-family: var(--font-main);
-  font-size: 0.84rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.25s ease;
-}
-
-.screenshare-nav-btn:hover {
-  background: rgba(196, 30, 72, 0.22);
-  border-color: #c41e48;
-  transform: translateY(-1px);
-}
-
-.screenshare-nav-btn.active-sharing {
-  background: #c41e48;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(196, 30, 72, 0.35);
-}
-
-.live-dot-pulse {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #c41e48;
-  display: inline-block;
-  animation: pulse-red 1.6s infinite;
-}
-
-.screenshare-nav-btn.active-sharing .live-dot-pulse {
-  background: #4ade80;
-  animation: pulse-green 1.6s infinite;
-}
-
-@keyframes pulse-red {
-  0% { box-shadow: 0 0 0 0 rgba(196, 30, 72, 0.6); }
-  70% { box-shadow: 0 0 0 7px rgba(196, 30, 72, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(196, 30, 72, 0); }
-}
-
-/* Screen Share Modal */
-.screenshare-modal-card {
-  max-width: 520px;
-  background: #ffffff;
-  border-radius: 20px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
-  border: 1px solid #e5e7eb;
-  overflow: hidden;
-}
-
-.screenshare-modal-card .modal-header {
-  background: #fcfdfe;
-  border-bottom: 1px solid #f0f2f5;
-  padding: 18px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
+/* Manual SMS Modal Specifics */
 .modal-header-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
-.screenshare-icon-wrap {
-  width: 42px;
-  height: 42px;
-  background: rgba(196, 30, 72, 0.1);
-  border-radius: 10px;
+.sms-modal-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--clr-primary-light);
+  color: var(--clr-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #c41e48;
-}
-
-.modal-header-brand h3 {
-  font-family: var(--font-brand);
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #1f2937;
-  margin: 0;
 }
 
 .modal-subtitle {
-  font-size: 0.78rem;
-  color: #6b7280;
-  margin-top: 2px;
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 1px;
 }
 
-.screenshare-modal-body {
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.screenshare-consent-banner {
+.manual-sms-notice-banner {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-left: 4px solid #c41e48;
-  border-radius: 8px;
-  padding: 12px 16px;
+  border-radius: 10px;
+  padding: 10px 14px;
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  margin-bottom: 16px;
 }
 
-.consent-icon {
-  font-size: 1.2rem;
-  line-height: 1;
+.sms-field-group {
+  margin-bottom: 14px;
 }
 
-.consent-text strong {
-  display: block;
-  font-size: 0.88rem;
-  color: #1e293b;
+.sms-field-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
   margin-bottom: 4px;
 }
 
-.consent-text p {
-  font-size: 0.8rem;
-  color: #64748b;
-  line-height: 1.45;
-  margin: 0;
+.sms-req-tag {
+  color: #94a3b8;
+  font-size: 11px;
 }
 
-.screenshare-status-box {
-  background: #f1f5f9;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 14px 18px;
-}
-
-.status-indicator-row {
+.sms-copy-row {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.status-badge-chip {
-  font-size: 0.76rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: #e2e8f0;
-  color: #475569;
+.sms-copy-row.full-vertical {
+  flex-direction: column;
 }
 
-.status-badge-chip.active {
-  background: #dcfce7;
-  color: #15803d;
-}
-
-.status-badge-chip.waiting {
-  background: #fef3c7;
-  color: #b45309;
-}
-
-.status-badge-chip.denied {
-  background: #fee2e2;
-  color: #b91c1c;
-}
-
-.status-chip-desc {
-  font-size: 0.84rem;
-  color: #334155;
-  font-weight: 600;
-}
-
-.session-link-row {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px dashed #cbd5e1;
-}
-
-.session-info-label {
-  font-size: 0.75rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 6px;
-}
-
-.session-token-box {
-  background: #0f172a;
+.sms-readonly-field {
+  flex: 1;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  padding: 8px 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #38bdf8;
+  padding: 9px 12px;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 14px;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.sms-readonly-textarea {
+  width: 100%;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: #0f172a;
+  resize: none;
 }
 
 .btn-copy-token {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 5px;
-  font-size: 0.72rem;
+  background: #ffffff;
+  border: 1.5px solid var(--clr-primary);
+  color: var(--clr-primary);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  white-space: nowrap;
+  transition: all 0.15s ease;
 }
 
 .btn-copy-token:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--clr-primary);
+  color: #ffffff;
 }
 
-.viewer-direct-link {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: #c41e48;
-  text-decoration: none;
-  display: inline-block;
-  margin-top: 6px;
-}
-
-.viewer-direct-link:hover {
-  text-decoration: underline;
-}
-
-.mobile-unsupported-notice {
-  background: #fffbeb;
-  border: 1px solid #fef3c7;
+.sms-instruction-steps {
+  background: #f8fafc;
   border-radius: 8px;
-  padding: 12px 16px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-
-.mobile-unsupported-notice .notice-icon {
-  font-size: 1.3rem;
-}
-
-.mobile-unsupported-notice strong {
-  display: block;
-  font-size: 0.86rem;
-  color: #92400e;
-  margin-bottom: 3px;
-}
-
-.mobile-unsupported-notice p {
-  font-size: 0.79rem;
-  color: #b45309;
-  line-height: 1.45;
-  margin: 0;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #475569;
+  margin: 14px 0;
+  line-height: 1.6;
 }
 
 .screenshare-actions-row {
-  display: flex;
-  gap: 12px;
-  margin-top: 6px;
+  margin-top: 16px;
 }
 
 .btn-share-start {
-  flex: 1;
-  background: var(--button-gradient);
-  color: #fff;
+  width: 100%;
+  background: var(--clr-primary);
+  color: #ffffff;
   border: none;
-  padding: 13px 20px;
-  border-radius: 12px;
+  border-radius: 10px;
+  padding: 12px;
   font-weight: 700;
-  font-size: 0.94rem;
-  cursor: pointer;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  box-shadow: var(--shadow-btn);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn-share-start:hover {
-  background: var(--button-gradient-hover);
-  transform: translateY(-1px);
-}
-
-.btn-share-stop {
-  flex: 1;
-  background: #dc2626;
-  color: #fff;
-  border: none;
-  padding: 13px 20px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 0.94rem;
+  gap: 8px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  transition: background 0.2s;
-}
-
-.btn-share-stop:hover {
-  background: #b91c1c;
 }

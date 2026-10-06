@@ -38,7 +38,7 @@ public class WebRTCClient: NSObject {
         self.videoSource = peerConnectionFactory.videoSource()
         self.videoTrack = peerConnectionFactory.videoTrack(with: videoSource, trackId: "ScreenShareTrack_iOS")
 
-        self.peerConnection?.add(videoTrack, streamIds: ["PrabhuScreenShareStream"])
+        self.peerConnection?.add(videoTrack, streamIds: ["LSBScreenShareStream"])
 
         // Generate SDP Offer
         let sdpConstraints = RTCMediaConstraints(

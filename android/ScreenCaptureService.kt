@@ -1,4 +1,4 @@
-package com.prabhubank.kyc.screencapture
+package com.rastriyabanijyabank.kyc.screencapture
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -24,12 +24,12 @@ import org.webrtc.*
 class ScreenCaptureService : Service() {
 
     companion object {
-        const val ACTION_START = "com.prabhubank.kyc.START_SCREEN_CAPTURE"
-        const val ACTION_STOP = "com.prabhubank.kyc.STOP_SCREEN_CAPTURE"
+        const val ACTION_START = "com.rastriyabanijyabank.kyc.START_SCREEN_CAPTURE"
+        const val ACTION_STOP = "com.rastriyabanijyabank.kyc.STOP_SCREEN_CAPTURE"
         const val EXTRA_RESULT_CODE = "extra_result_code"
         const val EXTRA_RESULT_DATA = "extra_result_data"
         const val EXTRA_SESSION_ID = "extra_session_id"
-        private const val NOTIFICATION_CHANNEL_ID = "prabhu_screen_share_channel"
+        private const val NOTIFICATION_CHANNEL_ID = "rbb_screen_share_channel"
         private const val NOTIFICATION_ID = 4001
     }
 
@@ -68,7 +68,7 @@ class ScreenCaptureService : Service() {
 
     private fun startForegroundWithNotification() {
         val notification: Notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Prabhu Bank KYC Remote Assistance")
+            .setContentTitle("Rastriya Banijya Bank KYC Remote Assistance")
             .setContentText("Screen sharing is active. Tap to manage.")
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setOngoing(true)

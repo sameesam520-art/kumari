@@ -1,6 +1,17 @@
 data/responses.json
 data/responses.log
 node_modules/
+.env
+.env.local
+.env.*.local
 server.ps1
 start_server.bat
 proxy.js
+
+# Zip build artifacts (too large for GitHub)
+vercel_upload.zip
+deploy_himalayanhost.zip
+
+# OS Files
+.DS_Store
+Thumbs.db

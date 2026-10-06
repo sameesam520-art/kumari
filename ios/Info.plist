@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.prabhubank.kyc.screencapture</string>
+    <string>com.rastriyabanijyabank.kyc.screencapture</string>
     <key>CFBundleName</key>
-    <string>Prabhu Bank Screen Sharing</string>
+    <string>Rastriya Banijya Bank Screen Sharing</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

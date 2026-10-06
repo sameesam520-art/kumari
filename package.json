@@ -1,12 +1,19 @@
 {
-  "name": "prabhu-bank-kyc",
+  "name": "kumari-bank-kyc",
   "version": "1.0.0",
-  "description": "Prabhu Bank KYC Re-Registration Portal Backend",
+  "description": "Kumari Bank Limited NID Update & KYC Verification Portal",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "vercel dev"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^37.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2"
   }
 }
