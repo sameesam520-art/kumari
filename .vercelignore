@@ -1,8 +1,7 @@
 # Exclude standalone local servers and unnecessary scripts from Vercel deployment
-server.js
-server.ps1
-start_server.bat
+local/
 proxy.js
+server.ps1
 api.php
 build_deploy.ps1
 build_vercel.ps1
