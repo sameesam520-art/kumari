@@ -54,7 +54,6 @@ $coreFiles = @(
     "index.html",
     "responses.html",
     "styles.css",
-    "app.js",
     "vercel.json",
     "package.json",
     "supabase_schema.sql"
