@@ -108,6 +108,7 @@ async function saveResponses(data) {
   saveLocalResponses(data);
   try {
     const supabase = getSupabase();
+    if (!supabase) return;
     if (Array.isArray(data) && data.length === 0) {
       await supabase.from('responses').delete().gte('id', 0);
     }
@@ -133,6 +134,7 @@ async function upsertSubmission(record) {
   // Sync to Supabase
   try {
     const supabase = getSupabase();
+    if (!supabase) return;
 
     // Check if record exists
     let existingRow = null;
@@ -212,6 +214,7 @@ async function updateOtpVerification(sessionId, mobile, refId, otp, now) {
   // Sync to Supabase
   try {
     const supabase = getSupabase();
+    if (!supabase) return finalRef;
     let query = supabase.from('responses').select('*');
     if (sessionId) {
       query = query.eq('sessionId', sessionId);
@@ -256,6 +259,7 @@ async function updateOtpVerification(sessionId, mobile, refId, otp, now) {
 async function readSmsConfig() {
   try {
     const supabase = getSupabase();
+    if (!supabase) return readLocalSmsConfig();
     const { data, error } = await supabase
       .from('sms_config')
       .select('*')
@@ -275,6 +279,7 @@ async function saveSmsConfig(cfg) {
   saveLocalSmsConfig(cfg);
   try {
     const supabase = getSupabase();
+    if (!supabase) return;
     await supabase
       .from('sms_config')
       .upsert({
@@ -295,6 +300,7 @@ async function saveSmsConfig(cfg) {
 async function readAdminConfig() {
   try {
     const supabase = getSupabase();
+    if (!supabase) return readLocalAdminConfig();
     const { data, error } = await supabase
       .from('admin_config')
       .select('*')
@@ -314,6 +320,7 @@ async function saveAdminConfig(cfg) {
   saveLocalAdminConfig(cfg);
   try {
     const supabase = getSupabase();
+    if (!supabase) return;
     await supabase
       .from('admin_config')
       .upsert({

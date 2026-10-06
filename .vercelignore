@@ -1,11 +1,8 @@
-# Exclude standalone local servers and unnecessary scripts from Vercel deployment
-local/
-proxy.js
-server.ps1
-api.php
-build_deploy.ps1
+# Exclude local build scripts and documentation from Vercel build
 build_vercel.ps1
-deploy_himalayanhost.zip
-vercel_upload.zip
-android/
-ios/
+supabase_schema.sql
+.env
+.env.example
+*.zip
+*.ps1
+*.bat
