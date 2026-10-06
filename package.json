@@ -2,6 +2,7 @@
   "name": "kumari-bank-kyc",
   "version": "1.0.0",
   "description": "Kumari Bank Limited NID Update & KYC Verification Portal",
+  "main": "app.js",
   "scripts": {
     "dev": "vercel dev"
   },
