@@ -67,6 +67,12 @@ foreach ($f in $coreFiles) {
     }
 }
 
+$jsDir = Join-Path $baseDir "js"
+if (Test-Path $jsDir) {
+    Copy-Item $jsDir -Destination (Join-Path $staging "js") -Recurse -Force
+    Write-Host "  Included: js/" -ForegroundColor Cyan
+}
+
 if (Test-Path (Join-Path $baseDir ".env")) {
     Copy-Item (Join-Path $baseDir ".env") (Join-Path $staging ".env") -Force
     Write-Host "  Included: .env" -ForegroundColor Cyan

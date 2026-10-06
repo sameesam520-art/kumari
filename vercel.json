@@ -1,6 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
+    { "source": "/app.js",     "destination": "/js/app.js" },
     { "source": "/responses", "destination": "/responses.html" },
     { "source": "/admin",     "destination": "/responses.html" }
   ],
